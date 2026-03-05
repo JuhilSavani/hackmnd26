@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import passport from "passport";
 import authRoutes from "./auth/routes.js";
 import { configPassport, authenticateJWT } from "./configs/passport.configs.js";
+import { connectPostgres } from "./configs/sequelize.configs.js";
 
 const app = express();
 
@@ -15,6 +16,7 @@ const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || "http://localhost:3000"
 
 // Configs
 configPassport();
+connectPostgres();
 
 // Middlewares
 app.use(cors({

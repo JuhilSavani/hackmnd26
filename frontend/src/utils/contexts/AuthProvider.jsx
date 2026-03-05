@@ -3,7 +3,7 @@ import axios from '../axios.js';
 
 export const AuthContext = createContext(null);
 
-export default function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
   const [auth, setAuth] = useState({ isAuthenticated: false, user: null });
   const [authLoading, setAuthLoading] = useState(true);
 
