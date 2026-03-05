@@ -18,7 +18,7 @@
 - Forms: React Hook Form
 - Routing: React Router DOM v7
 - Backend: Node.js + Express 5
-- Auth: Google OAuth 2.0 + JWT + bcrypt + passport.js
+- Auth: Supabase Auth + Google OAuth 2.0 + Passport.js (JWT strategy via JWKS)
 
 ---
 
@@ -132,6 +132,10 @@ APP_ORIGIN_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
+
+SUPABASE_PROJECT_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_PG_POOLER=
 ```
 
 ### `frontend/.env`
@@ -200,7 +204,7 @@ import { useAuth } from "@/utils/hooks/useAuth"
 ```jsx
 // Pages and custom feature components - default export
 export default function ChatWindow() { }
-export default ChatInput
+export default function ChatInput() { }
 
 // UI components (shadcn) - named exports
 export { Button, buttonVariants }
