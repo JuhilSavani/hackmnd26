@@ -8,6 +8,7 @@ import Loading from "@/utils/components/Loading"
 import { ThemeProvider } from "@/utils/contexts/ThemeProvider"
 import { AuthProvider }from "@/utils/contexts/AuthProvider"
 import { useAuth } from "@/utils/hooks/useAuth"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 
 const Protected = ({ children }) => {
@@ -33,14 +34,8 @@ const router = createBrowserRouter(
         <Route path="register" element={<RegisterPage />} />
 
         {/* Protected routes — require authentication */}
-        <Route
-          path="workspace"
-          element={
-            <Protected>
-              <Workspace />
-            </Protected>
-          }
-        />
+        <Route path="workspace" element={<Protected><Workspace /></Protected>} />
+        <Route path="workspace/:threadId" element={<Protected><Workspace /></Protected>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
@@ -53,7 +48,9 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AuthProvider>
-        <RouterProvider router={router} />
+        <TooltipProvider>
+          <RouterProvider router={router} />
+        </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
   )

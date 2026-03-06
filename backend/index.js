@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
 import authRoutes from "./auth/routes.js";
+import uploadRoutes from "./upload/routes.js";
+import mainRoutes from "./main/routes.js";
 import { configPassport, authenticateJWT } from "./configs/passport.configs.js";
 import { connectPostgres } from "./configs/sequelize.configs.js";
 
@@ -78,6 +80,8 @@ app.get("/", (req, res) => {
 // Actual Routes
 app.use("/api/auth", authRoutes);
 app.use(authenticateJWT);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/main", mainRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running in ${NODE_ENV} mode at http://localhost:${PORT}`);
