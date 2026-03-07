@@ -5,9 +5,11 @@ import rateLimit from "express-rate-limit";
 import passport from "passport";
 import authRoutes from "./auth/routes.js";
 import uploadRoutes from "./upload/routes.js";
-import mainRoutes from "./main/routes.js";
+import threadsRoutes from "./threads/routes.js";
+import documentRoutes from "./document/routes.js";
+import agentRoutes from "./agent/routes.js";
 import { configPassport, authenticateJWT } from "./configs/passport.configs.js";
-import { connectPostgres } from "./configs/sequelize.configs.js";
+import { connectPostgres, createPersistenceTables } from "./configs/sequelize.configs.js";
 
 const app = express();
 
@@ -19,6 +21,7 @@ const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || "http://localhost:3000"
 // Configs
 configPassport();
 connectPostgres();
+createPersistenceTables();
 
 // Middlewares
 app.use(cors({
@@ -81,7 +84,9 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use(authenticateJWT);
 app.use("/api/upload", uploadRoutes);
-app.use("/api/main", mainRoutes);
+app.use("/api/threads", threadsRoutes);
+app.use("/api/document", documentRoutes);
+app.use("/api/agent", agentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running in ${NODE_ENV} mode at http://localhost:${PORT}`);

@@ -19,6 +19,8 @@
 - Routing: React Router DOM v7
 - Backend: Node.js + Express 5
 - Auth: Supabase Auth + Google OAuth 2.0 + Passport.js (JWT strategy via JWKS)
+- Database: PostgreSQL + Sequelize ORM (via Supabase connection pooling)
+- Storage: Cloudinary (Direct PDF & document uploads)
 
 ---
 
@@ -35,8 +37,12 @@ hackmnd26/
 │   ├── package.json
 │   ├── index.js                        # API entry point — Express setup & middleware
 │   ├── clients/                        # Third-party SDK client initializations (googleoauth2.clients.js)
-│   ├── configs/                        # Configuration modules (passport.configs.js)
+│   ├── configs/                        # Configuration modules (passport, cloudinary, sequelize)
 │   ├── utils/                          # Shared utility functions
+│   ├── models/                         # Sequelize database models (user.models.js, thread.models.js)
+│   ├── upload/                         # Upload handling service area
+│   │   ├── routes.js                   # Endpoint routing for signatures & logs
+│   │   └── controllers.js              # Cloudinary API interaction logic
 │   └── auth/                           # Authentication service
 │       ├── routes.js                   # Route definitions for /api/auth/*
 │       └── controllers.js              # Handler logic for auth endpoints

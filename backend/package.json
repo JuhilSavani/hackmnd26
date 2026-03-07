@@ -17,10 +17,12 @@
   },
   "dependencies": {
     "@langchain/community": "^1.1.22",
-    "@langchain/core": "^1.1.30",
+    "@langchain/core": "^1.1.31",
+    "@langchain/google-genai": "^2.1.24",
     "@langchain/langgraph": "^1.2.0",
     "@langchain/langgraph-checkpoint-postgres": "^1.0.1",
     "@langchain/tavily": "^1.2.0",
+    "@mendable/firecrawl-js": "^4.15.2",
     "@supabase/supabase-js": "^2.98.0",
     "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",
@@ -36,6 +38,7 @@
     "passport-jwt": "^4.0.1",
     "pg": "^8.20.0",
     "sequelize": "^6.37.7",
-    "unpdf": "^1.4.0"
+    "unpdf": "^1.4.0",
+    "zod": "^4.3.6"
   }
 }

@@ -47,13 +47,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-linear-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
-            <span className="font-semibold text-2xl tracking-tight">Sidekick</span>
+            <span className="font-semibold text-2xl tracking-tight">PaperPilot</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#a1a1aa]">
             <a href="#stack" className="hover:text-[#fafafa] transition-colors">Tech Stack</a>
             <a href="#system-design" className="hover:text-[#fafafa] transition-colors">Architecture</a>
             <a href="#developer-notes" className="hover:text-[#fafafa] transition-colors">Developer Notes</a>
-            <a href="https://github.com/JuhilSavani/chatbot" target="_blank" rel="noopener noreferrer" className="hover:text-[#fafafa] transition-colors">GitHub</a>
+            <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-[#fafafa] transition-colors">GitHub</a>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-sm font-medium hover:text-white/80 transition-colors hidden sm:block">Log in</Link>
@@ -71,18 +71,18 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-[#a1a1aa] mb-4 hover:border-white/20 transition-colors cursor-default">
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-            <span>Open Source Engineering Project</span>
+            <span>HackaMined 2026 // Cactus Communications</span>
             <span className="w-px h-3 bg-white/10 mx-1"></span>
-            <span className="text-white/60">v1.0.0</span>
+            <span className="text-white/60">Fix My Format</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/60 pb-2">
-            Exploring Conversational <br />
-            <span className="text-white">Agentic Workflows</span>
+            Autonomous Manuscript <br />
+            <span className="text-white">Formatting Agent</span>
           </h1>
 
           <p className="text-lg md:text-xl text-[#a1a1aa] max-w-3xl mx-auto leading-relaxed">
-            An open-source reference architecture featuring cross-session conversational memory, autonomous tool execution, and real-time token streaming.
+            An agentic workflow that autonomously reformats research manuscripts to comply with journal-specific guidelines. Say goodbye to desk rejections.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -90,7 +90,7 @@ export default function LandingPage() {
               Start Chatting
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-0.5 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </Link>
-            <a href="https://github.com/JuhilSavani/chatbot" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 text-[#fafafa] font-medium rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+            <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 text-[#fafafa] font-medium rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
               View Source
             </a>
@@ -144,7 +144,8 @@ export default function LandingPage() {
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tailwind v4</div>
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">LangGraph</div>
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">PostgreSQL</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Supabase</div>
+            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tavily Search</div>
+            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Firecrawl</div>
           </div>
         </div>
       </section>
@@ -170,14 +171,15 @@ export default function LandingPage() {
               {/* Terminal Body */}
               <div className="bg-[#09090b] rounded-b-lg p-6 font-mono text-sm text-[#d4d4d4] overflow-hidden">
                 <span className="text-[#ce9178]">"project_status"</span>: {'{'}<br/>
-                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"phase"</span>: <span className="text-[#ce9178]">"active_development"</span>,<br/>
-                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"current_version"</span>: <span className="text-[#b5cea8]">1.0.0</span>,<br/>
+                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"track"</span>: <span className="text-[#ce9178]">"Fix My Format, Cactus Communications"</span>,<br/>
+                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"event"</span>: <span className="text-[#ce9178]">"HackaMined 2026"</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"open_source"</span>: <span className="text-[#569cd6]">true</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"maintained_by"</span>: <span className="text-[#ce9178]">"Juhil Savani"</span>,<br/>
-                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"next_steps"</span>: [<br/>
-                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Rate-limit free-tier users"</span>,<br/>
-                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Integrate MCP servers"</span>,<br/>
-                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Add multi-modal support"</span><br/>
+                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"features"</span>: [<br/>
+                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"DOCX/PDF parsing"</span>,<br/>
+                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Agentic rule interpretation"</span>,<br/>
+                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"LaTeX autonomous fixing"</span>,<br/>
+                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Cloudinary secure delivery"</span><br/>
                 {'\u00A0\u00A0'}]<br/>
                 {'}'}
               </div>
@@ -201,10 +203,10 @@ export default function LandingPage() {
             <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-linear-to-r from-transparent via-white/20 to-transparent -z-10"></div>
 
             {[
-              { step: '1', title: 'Client (React)', desc: 'Sends prompt via protected API route using Axios.' },
-              { step: '2', title: 'Server (Express)', desc: 'Validates JWT auth and routes request to LangGraph workflow.' },
-              { step: '3', title: 'AI Agent', desc: 'Processes intent, calls tools if needed, and streams response.' },
-              { step: '4', title: 'Database (PG)', desc: 'Persists conversation history and thread metadata.' },
+              { step: '1', title: 'Upload & Parse', desc: 'Securely uploads DOCX/PDF to Cloudinary and extracts raw text + metadata.' },
+              { step: '2', title: 'Rules & Context', desc: 'Uses Firecrawl to scrape target journal formatting guidelines.' },
+              { step: '3', title: 'Agentic Pipeline', desc: 'LangGraph orchestrates Detection, Fix generation, and Critic validation.' },
+              { step: '4', title: 'Secure Delivery', desc: 'Outputs formatted LaTeX and provides a signed, expiring Cloudinary URL.' },
             ].map(({ step, title, desc }) => (
               <div key={step} className="text-center space-y-4 relative">
                 <div className="w-20 h-20 mx-auto bg-[#18181b] border border-white/10 rounded-2xl flex items-center justify-center relative z-10 shadow-xl">
@@ -226,12 +228,12 @@ export default function LandingPage() {
           <div className="space-y-4">
             {[
               {
-                question: 'Why did I build this?',
-                answer: 'I wanted to move beyond simple "wrapper" applications and understand what happens after that. How do you persist context? How do you handle efficient streaming updates on the frontend? Effectively, Sidekick is my playground for answering those questions. It\'s a documentation of my learning curve in building complex, stateful applications.',
+                question: 'What is the scale of the formatting problem?',
+                answer: 'Manual reformatting costs $1B+ annually, wastes 30+ hours per manuscript, and contributes to 30-70% of desk rejections. PaperPilot solves this quantified, high-impact problem autonomously.',
               },
               {
-                question: 'Is this targeted as a commercial SaaS?',
-                answer: 'No. This is primarily a learning project and portfolio piece. It is open-sourced to help other developers learn how to integrate these specific technologies.',
+                question: 'Why uses an Agent instead of Templates?',
+                answer: 'Guidelines live in PDFs and prose pages—there is no machine-readable API for them. Output must be publication ready, and consistency is global. An agentic rule interpreter can handle unstructured HTML guidelines scraped from journals and dynamically adjust text.',
               },
             ].map((item, index) => (
               <div
@@ -279,10 +281,10 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Want to explore the code?</h2>
           <p className="text-xl text-[#a1a1aa] mb-10 max-w-2xl mx-auto">
-            Dive into the open-source repository to see how conversational memory, tool execution, and token streaming are built.
+            Experience the future of academic publishing formatting with PaperPilot.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://github.com/JuhilSavani/chatbot" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 bg-[#fafafa] border border-transparent text-[#18181b] font-medium rounded-lg hover:bg-[#fafafa]/90 transition-all shadow-lg hover:shadow-white/20 flex items-center justify-center gap-2 group">
+            <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 bg-[#fafafa] border border-transparent text-[#18181b] font-medium rounded-lg hover:bg-[#fafafa]/90 transition-all shadow-lg hover:shadow-white/20 flex items-center justify-center gap-2 group">
               View Source Code
             </a>
             <Link to="/workspace" className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 text-[#fafafa] font-medium rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
@@ -298,18 +300,18 @@ export default function LandingPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded bg-linear-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
-              <span className="font-bold text-white text-xl">Sidekick</span>
+              <span className="font-bold text-white text-xl">PaperPilot</span>
             </div>
-            <p>Agentic conversational AI built for learning purposes.</p>
+            <p>Agentic Manuscript Formatter.</p>
           </div>
 
           <div className="flex gap-8 font-medium">
-            <a href="https://github.com/JuhilSavani/chatbot" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Github Repository</a>
+            <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Github</a>
             <a href="mailto:savanijuhil@gmail.com" className="hover:text-white transition-colors">Contact Developer</a>
           </div>
 
           <div className="text-center md:text-right">
-            <p>© 2026 Sidekick. Open Source Project.</p>
+            <p>© 2026 PaperPilot. HackaMined 2026.</p>
           </div>
         </div>
       </footer>

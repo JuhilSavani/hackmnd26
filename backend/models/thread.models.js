@@ -28,8 +28,28 @@ export const Thread = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    instructionsUrl: {
-      type: DataTypes.STRING(2048), // Use longer limit for potentially long URLs
+    guidelinesUrl: {
+      type: DataTypes.STRING(2048),
+      allowNull: true,
+    },
+    extractedText: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    documentType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    guidelinesContent: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    documentMetadata: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
+    finalDocumentId: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
   },

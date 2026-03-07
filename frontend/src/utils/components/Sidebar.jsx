@@ -2,13 +2,13 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { useAuth } from "../hooks/useAuth"
-import { loadChatThreadsAction } from "../actions/chat.actions"
+import { loadAllThreadsAction } from "../actions/thread.actions"
 
 import { MessageSquare, Plus, Search, LogOut, Pin, Trash2 } from "lucide-react"
 import useLogout from "../hooks/useLogout"
 import { usePinnedThreads } from "../hooks/usePinnedThreads"
 import {
-  Sidebar,
+  Sidebar as UISidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
@@ -18,7 +18,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { deleteThreadAction } from "../actions/chat.actions"
+import { deleteThreadAction } from "../actions/thread.actions"
 
 
 const SidebarActiveIcon = ({ className = "w-4 h-5" }) => (
@@ -56,13 +55,33 @@ const SidebarActiveIcon = ({ className = "w-4 h-5" }) => (
   </svg>
 );
 
-export default function ChatSidebar({ threads = [], isLoading = false, setThreads }) {
-  const { toggleSidebar, open, setOpen, isMobile } = useSidebar()
+export default function Sidebar({ threads = [], setThreads }) {
+  const { toggleSidebar } = useSidebar()
   const { auth } = useAuth()
   const { logout, logoutLoading } = useLogout()
   const navigate = useNavigate()
   const { threadId } = useParams()
   const [searchQuery, setSearchQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) return;
+    
+    let isMounted = true;
+    const fetchThreads = async () => {
+      setIsLoading(true);
+      const res = await loadAllThreadsAction();
+      if (isMounted) {
+        if (!res.error && res.threads) {
+          setThreads(res.threads);
+        }
+        setIsLoading(false);
+      }
+    };
+    fetchThreads();
+    
+    return () => { isMounted = false; };
+  }, [auth.isAuthenticated, setThreads]);
 
   // Initialize with threads that are already pinned from server
   const { pinned, togglePin } = usePinnedThreads(
@@ -112,7 +131,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
 
   // Filter first
   const filtered = threads.filter(thread => 
-    (thread.threadName || "Untitled Chat").toLowerCase().includes(searchQuery.toLowerCase())
+    (thread.title || "Untitled Chat").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Split into pinned and unpinned
@@ -137,7 +156,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
         <div className="flex flex-col gap-1 min-w-0 flex-1 relative">
           <div className="flex items-center justify-between">
             <span className="truncate font-medium text-sm text-zinc-300 group-data-[active=true]/thread:text-white group-hover/thread:text-white group-active/thread:text-white transition-colors pr-6">
-              {thread.threadName || "Untitled Chat"}
+              {thread.title || "Untitled Chat"}
             </span>
             {pinned.has(thread.threadId) && (
               <Pin className="h-3 w-3 text-zinc-400 rotate-45 shrink-0 block group-hover/thread:hidden" />
@@ -184,7 +203,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
 
   return (
     <>
-    <Sidebar 
+    <UISidebar 
       variant="sidebar" 
       side="left" 
       collapsible="offcanvas" 
@@ -195,7 +214,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-3 font-bold text-[1.1rem] tracking-tight text-[#fafafa]">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
-               <span className="font-semibold text-2xl tracking-tight">Sidekick</span>
+               <span className="font-semibold text-2xl tracking-tight">PaperPilot</span>
             </div>
           </div>
           
@@ -298,7 +317,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
           </div>
          
       </SidebarFooter>
-    </Sidebar>
+    </UISidebar>
 
     <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
       <AlertDialogContent className="bg-[#09090b] border-white/10 text-[#fafafa] sm:rounded-2xl shadow-2xl">
@@ -306,7 +325,7 @@ export default function ChatSidebar({ threads = [], isLoading = false, setThread
           <AlertDialogTitle>Delete conversation?</AlertDialogTitle>
           <AlertDialogDescription className="text-[#a1a1aa]">
             This action cannot be undone. This will permanently delete the chat thread
-            <span className="font-semibold text-[#fafafa]"> "{threadToDelete?.threadName || 'Untitled Chat'}" </span>
+            <span className="font-semibold text-[#fafafa]"> "{threadToDelete?.title || 'Untitled Chat'}" </span>
             and remove all associated messages.
           </AlertDialogDescription>
         </AlertDialogHeader>

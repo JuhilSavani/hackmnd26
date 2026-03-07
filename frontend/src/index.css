@@ -17,6 +17,11 @@
     @apply m-0 p-0 box-border;
   }
 
+  *::selection {
+    @apply bg-white/20 text-white;
+  }
+
+
   ul {
     @apply list-none;
   }
