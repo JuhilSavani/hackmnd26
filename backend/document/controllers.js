@@ -123,7 +123,7 @@ export const processDocumentStream = async (req, res) => {
       { where: { threadId } }
     );
 
-    res.write(`data: ${JSON.stringify({ type: "success", status: "done", val: "Parsing finished and context initialized." })}\n\n`);
+    res.write(`data: ${JSON.stringify({ type: "success", status: "done", val: "Parsing finished and agentic pipeline initialized..." })}\n\n`);
 
   } catch (error) {
     if (error.name === 'AbortError' || error.message === 'Abort') {

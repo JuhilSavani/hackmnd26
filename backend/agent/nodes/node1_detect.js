@@ -4,13 +4,13 @@ import { DetectionOutputSchema } from "../state.js";
 import { buildDetectPrompt } from "../prompts/detect.prompt.js";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3-flash-preview",
+  model: "gemini-2.5-flash",
   temperature: 0,
   apiKey: process.env.GEMINI_API_KEY,
 }).withStructuredOutput(DetectionOutputSchema);
 
 const streamModel = new ChatGoogleGenerativeAI({
-  model: "gemini-3-flash-preview",
+  model: "gemini-2.5-flash-lite",
   temperature: 0,
   streaming: true,
   apiKey: process.env.GEMINI_API_KEY,
@@ -39,10 +39,25 @@ export async function node1Detect(state, config) {
   const streamCallback = config?.configurable?.streamCallback;
   let detectSummary = "";
   
-  const summaryPrompt = `Summarize these manuscript findings in 2-3 sentences max for the user. Do not use markdown like bolding. Be concise.
-  Target Journal: ${result.target_journal}
-  Total Issues Detected: ${result.detected_issues.length}
-  Details: ${result.detected_issues.map((i) => `[${i.type}] ${i.description}`).join('; ')}`;
+  const summaryPrompt = `You are presenting a detection report to a researcher who just uploaded their manuscript. Write a comprehensive, well-structured summary of the findings. Do not use markdown formatting like bold (**) or headers (#). Use plain text only.
+
+Structure your summary as follows:
+
+1. Open with the identified target journal and citation style, and state the total number of issues detected.
+
+2. Break down the issues by category (e.g., Citation & Reference Issues, Structural Issues, Formatting Issues). For each category, briefly explain what was found and how many issues fall under it.
+
+3. Highlight the most critical issues that need immediate attention — mention specific examples where possible (e.g., "References 4 through 18 are missing DOI fields", "Figure labels inconsistently alternate between Fig. and Figure").
+
+4. Close with an overall compliance assessment — is the manuscript close to being compliant, or does it need significant work?
+
+Keep the tone professional and informative. Aim for 6-10 sentences that give the researcher a clear picture of what was found and what matters most.
+
+Here are the detection results:
+Target Journal: ${result.target_journal}
+Total Issues Detected: ${result.detected_issues.length}
+Issue Details:
+${result.detected_issues.map((i, idx) => `${idx + 1}. [${i.type}] ${i.description} (Location: ${i.location || 'N/A'})`).join('\n')}`;
   
   if (streamCallback) {
     const stream = await streamModel.stream(summaryPrompt);

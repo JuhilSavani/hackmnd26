@@ -63,11 +63,11 @@ export const streamAgent = async (req, res) => {
 
     for await (const event of stream) {
       if (event.event === "on_chain_start" && event.name === "node1") {
-         res.write(`data: ${JSON.stringify({ type: "processing", text: "Detection is being started" })}\n\n`);
+         res.write(`data: ${JSON.stringify({ type: "processing", text: "Analyzing document against formatting guidelines..." })}\n\n`);
       } else if (event.event === "on_chain_start" && event.name === "node2") {
-         res.write(`data: ${JSON.stringify({ type: "processing", text: "Now fix is being started" })}\n\n`);
+         res.write(`data: ${JSON.stringify({ type: "processing", text: "Applying identified formatting corrections..." })}\n\n`);
       } else if (event.event === "on_chain_start" && event.name === "node3") {
-         res.write(`data: ${JSON.stringify({ type: "processing", text: "Validation is being started" })}\n\n`);
+         res.write(`data: ${JSON.stringify({ type: "processing", text: "Performing strict academic validation on applied corrections..." })}\n\n`);
       }
       // Node updates and ends are handled silently or by streamCallback inside nodes
     }

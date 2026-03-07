@@ -4,7 +4,7 @@ import { FixOutputSchema } from "../state.js";
 import { buildFixPrompt } from "../prompts/fix.prompt.js";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3-flash-preview",
+  model: "gemini-2.5-flash",
   temperature: 0,
   apiKey: process.env.GEMINI_API_KEY,
 }).withStructuredOutput(FixOutputSchema);

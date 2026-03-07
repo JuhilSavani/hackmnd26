@@ -4,13 +4,13 @@ import { CriticOutputSchema, ComplianceScoreSchema } from "../state.js";
 import { buildCriticPrompt } from "../prompts/critic.prompt.js";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3-flash-preview",
+  model: "gemini-2.5-flash",
   temperature: 0,
   apiKey: process.env.GEMINI_API_KEY,
 }).withStructuredOutput(CriticOutputSchema);
 
 const streamModel = new ChatGoogleGenerativeAI({
-  model: "gemini-3-flash-preview",
+  model: "gemini-2.5-flash-lite",
   temperature: 0,
   streaming: true,
   apiKey: process.env.GEMINI_API_KEY,
@@ -98,7 +98,23 @@ export async function node3Critic(state, config) {
 
   if (!shouldLoop) {
     if (allApplied.length > 0) {
-      const summaryPrompt = "Summarize the fixes applied to the manuscript in 2-3 sentences max. Do not use markdown like bolding. Be concise.\nTotal Fixes Applied: " + allApplied.length + "\nDetails: " + allApplied.map((f) => f.description).join('; ');
+      const summaryPrompt = `You are presenting a correction report to a researcher after their manuscript has been automatically formatted. Write a comprehensive, well-structured summary of all corrections applied. Do not use markdown formatting like bold (**) or headers (#). Use plain text only.
+
+Structure your summary as follows:
+
+1. Open with the total number of fixes successfully applied.
+
+2. Group the fixes by category (e.g., Citation & Reference corrections, Structural corrections, Formatting corrections). For each category, explain what was changed and how many fixes fall under it.
+
+3. Highlight the most impactful corrections — mention specific examples where possible (e.g., "Added missing DOI fields to 12 journal article references", "Standardized all figure labels from mixed Fig./Figure to Figure").
+
+4. Close with an overall assessment of how much the manuscript improved and whether any areas may still need manual review.
+
+Keep the tone professional and informative. Aim for 6-10 sentences that give the researcher a clear picture of what was corrected.
+
+Total Fixes Applied: ${allApplied.length}
+Fix Details:
+${allApplied.map((f, idx) => (idx + 1) + '. ' + f.description).join('\n')}`;
 
       if (streamCallback) {
         console.log(`[Node 3] Starting final summary stream to user...`);
