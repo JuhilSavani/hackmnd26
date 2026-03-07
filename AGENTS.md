@@ -26,29 +26,42 @@
 
 ## Project Structure
 
-```
+```text
 hackmnd26/
 ├── .gitignore
-├── README.md
+├── README.md                           # Main project documentation
 ├── AGENTS.md                           # This file
 │
 ├── backend/                            # Express v5 API server
-│   ├── .env
+│   ├── .env                            # Environment variables (ignored)
 │   ├── package.json
 │   ├── index.js                        # API entry point — Express setup & middleware
-│   ├── clients/                        # Third-party SDK client initializations (googleoauth2.clients.js)
+│   ├── agent/                          # AI agent workflow (LangGraph)
+│   │   ├── controllers.js              # Agent execution logic
+│   │   ├── graph.js                    # LangGraph workflow definition
+│   │   ├── nodes/                      # Graph nodes (detect, fix, critic)
+│   │   ├── prompts/                    # LLM prompts for the agent
+│   │   ├── routes.js                   # API route for agent triggering
+│   │   └── state.js                    # Agent state definition
+│   ├── clients/                        # Third-party SDK client initializations (google oauth, supabase)
 │   ├── configs/                        # Configuration modules (passport, cloudinary, sequelize)
-│   ├── utils/                          # Shared utility functions
 │   ├── models/                         # Sequelize database models (user.models.js, thread.models.js)
+│   ├── auth/                           # Authentication service
+│   │   ├── controllers.js              # Handler logic for auth endpoints
+│   │   └── routes.js                   # Route definitions for /api/auth/*
+│   ├── document/                       # Document processing service
+│   │   ├── controllers.js              # Business logic for document operations
+│   │   └── routes.js                   # Document-related API endpoints
+│   ├── threads/                        # Thread management service
+│   │   ├── controllers.js              # Logic for managing chat threads
+│   │   └── routes.js                   # Thread endpoints
 │   ├── upload/                         # Upload handling service area
-│   │   ├── routes.js                   # Endpoint routing for signatures & logs
-│   │   └── controllers.js              # Cloudinary API interaction logic
-│   └── auth/                           # Authentication service
-│       ├── routes.js                   # Route definitions for /api/auth/*
-│       └── controllers.js              # Handler logic for auth endpoints
+│   │   ├── controllers.js              # Cloudinary API interaction logic
+│   │   └── routes.js                   # Endpoint routing for signatures & logs
+│   └── utils/                          # Shared utility functions (extractors, etc.)
 │
 └── frontend/                           # React 19 + Vite SPA
-    ├── .env
+    ├── .env                            # Environment variables (ignored)
     ├── package.json
     ├── index.html                      # HTML shell (Vite entry)
     ├── vite.config.js                  # Vite config — plugins, dev server, aliases
@@ -63,11 +76,12 @@ hackmnd26/
         ├── lib/                        # Utility functions by shadcn (utils.js with cn())
         ├── pages/                      # Route-level page components
         └── utils/
-            ├── actions/                # API action/call functions (auth.actions.js)
+            ├── actions/                # API action/call functions (auth, stream, thread, upload)
             ├── components/             # Custom components
             ├── contexts/               # React context providers (ThemeProvider, AuthProvider)
             ├── hooks/                  # Custom react hooks (useAuth, useLogout, useTheme)
             └── ...                     # Other utility files (axios.js, handleAxiosError.js)
+ 
 ```
 
 ---
