@@ -143,9 +143,10 @@ export default function LandingPage() {
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">React 19</div>
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tailwind v4</div>
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">LangGraph</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">PostgreSQL</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tavily Search</div>
             <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Firecrawl</div>
+            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Cloudinary</div>
+            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">PostgreSQL</div>
+            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Supabase Auth</div>
           </div>
         </div>
       </section>
@@ -156,7 +157,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex justify-center">
           <div className="relative w-full md:w-1/2">
             <div className="rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm p-2 shadow-2xl relative">
-              <div className="absolute inset-0 bg-linear-to-t from-[#09090b] via-transparent to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-[#09090b]/98 via-transparent to-transparent z-10 pointer-events-none"></div>
 
               {/* Terminal Header */}
               <div className="bg-[#18181b] rounded-t-lg border-b border-white/5 px-4 py-3 flex items-center gap-2">
@@ -170,7 +171,7 @@ export default function LandingPage() {
 
               {/* Terminal Body */}
               <div className="bg-[#09090b] rounded-b-lg p-6 font-mono text-sm text-[#d4d4d4] overflow-hidden">
-                <span className="text-[#ce9178]">"project_status"</span>: {'{'}<br/>
+                <span className="text-[#ce9178]">{'{'}</span><br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"track"</span>: <span className="text-[#ce9178]">"Fix My Format, Cactus Communications"</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"event"</span>: <span className="text-[#ce9178]">"HackaMined 2026"</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"open_source"</span>: <span className="text-[#569cd6]">true</span>,<br/>
@@ -179,6 +180,7 @@ export default function LandingPage() {
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"DOCX/PDF parsing"</span>,<br/>
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Agentic rule interpretation"</span>,<br/>
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"LaTeX autonomous fixing"</span>,<br/>
+                {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Instant update using server sent events"</span><br/>
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Cloudinary secure delivery"</span><br/>
                 {'\u00A0\u00A0'}]<br/>
                 {'}'}
@@ -223,7 +225,7 @@ export default function LandingPage() {
       {/* Developer Notes (FAQ) */}
       <section id="developer-notes" className="py-24 px-6 border-t border-white/5 bg-[#09090b]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center">Developer Notes</h2>
+          <h2 className="text-3xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
 
           <div className="space-y-4">
             {[
