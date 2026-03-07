@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { FileText, Loader2, Check } from 'lucide-react';
+import { FileText, Loader2, Check, Download } from 'lucide-react';
 import Sidebar from '@/utils/components/Sidebar';
 import DocumentUpload from '@/utils/components/DocumentUpload';
 import { useAuth } from '@/utils/hooks/useAuth';
@@ -47,8 +47,8 @@ function MainContent({ setThreads }) {
   const [nodeText, setNodeText] = useState({});
   const [pipelineComplete, setPipelineComplete] = useState(false);
   const [stepsExpanded, setStepsExpanded] = useState(false);
-  const [secureDownloadUrl, setSecureDownloadUrl] = useState(null);
-  const [isGeneratingUrl, setIsGeneratingUrl] = useState(false);
+  const [downloadUrls, setDownloadUrls] = useState({ pdf: null, tex: null });
+  const [isGenerating, setIsGenerating] = useState({ pdf: false, tex: false });
   const abortStreamRef = useRef(null);
   const currentThreadIdRef = useRef(null);
 
@@ -62,8 +62,8 @@ function MainContent({ setThreads }) {
       setNodeText({});
       setPipelineComplete(false);
       setStepsExpanded(false);
-      setSecureDownloadUrl(null);
-      setIsGeneratingUrl(false);
+      setDownloadUrls({ pdf: null, tex: null });
+      setIsGenerating({ pdf: false, tex: false });
       setIsUploading(false);
       return;
     }
@@ -81,8 +81,8 @@ function MainContent({ setThreads }) {
     setNodeText({});
     setPipelineComplete(false);
     setStepsExpanded(false);
-    setSecureDownloadUrl(null);
-    setIsGeneratingUrl(false);
+    setDownloadUrls({ pdf: null, tex: null });
+    setIsGenerating({ pdf: false, tex: false });
     setIsUploading(false);
     setError(null);
 
@@ -140,7 +140,7 @@ function MainContent({ setThreads }) {
     setExtractionLogs([]);
     setNodeText({});
     setPipelineComplete(false);
-    setSecureDownloadUrl(null);
+    setDownloadUrls({ pdf: null, tex: null });
 
     // Optimistic UI — show the document card immediately
     const currentSubmission = {
@@ -253,21 +253,28 @@ function MainContent({ setThreads }) {
     }
   };
 
-  const handleGenerateUrl = async () => {
-    setIsGeneratingUrl(true);
+  const handleDownload = async (format) => {
+    setIsGenerating(prev => ({ ...prev, [format]: true }));
     setError(null);
     try {
-      const { downloadUrl, error } = await generateSecureUrlAction(threadId);
+      const { downloadUrl, error } = await generateSecureUrlAction(threadId, format);
       if (error) {
         setError(error);
       } else if (downloadUrl) {
-        setSecureDownloadUrl(downloadUrl);
+        setDownloadUrls(prev => ({ ...prev, [format]: downloadUrl }));
+        // Auto-trigger download
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = format === 'pdf' ? 'manuscript.pdf' : '';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     } catch (err) {
       console.error(err);
-      setError("An unexpected error occurred generating the document URL.");
+      setError(`Failed to generate ${format.toUpperCase()} download.`);
     } finally {
-      setIsGeneratingUrl(false);
+      setIsGenerating(prev => ({ ...prev, [format]: false }));
     }
   };
 
@@ -428,49 +435,48 @@ function MainContent({ setThreads }) {
                 </div>
               )}
 
-              {/* Secure Download Button — Full Width */}
+              {/* Download Buttons — PDF and LaTeX */}
               {pipelineComplete && (
                 <div className="w-full mb-4 px-2">
-                  <Button 
-                    className="w-full bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] font-semibold py-6 rounded-2xl transition-all shadow-md group border border-transparent"
-                    onClick={handleGenerateUrl}
-                    disabled={isGeneratingUrl}
-                  >
-                    {isGeneratingUrl ? (
-                      <span className="flex items-center gap-2 relative z-10">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Generating Document Link...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2 relative z-10 transition-transform duration-300">
-                        <FileText className="w-5 h-5" />
-                        Generate Secure Download URL
-                      </span>
-                    )}
-                  </Button>
-                  
-                  {secureDownloadUrl && (
-                    <div className="mt-4 p-5 rounded-xl border border-[#27272a] bg-transparent flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
-                          <Check className="w-5 h-5 text-green-500" />
-                        </div>
-                        <div>
-                          <h4 className="text-[15px] font-medium text-[#fafafa] mb-1">Original Manuscript Ready</h4>
-                          <p className="text-[13px] text-[#a1a1aa]">Secure link expires in 1 hour.</p>
-                        </div>
-                      </div>
+                  <div className="flex gap-3">
+                    {/* Download PDF Button */}
+                    <Button 
+                      className="flex-1 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] font-semibold py-6 rounded-2xl transition-all shadow-md group border border-transparent"
+                      onClick={() => handleDownload('pdf')}
+                      disabled={isGenerating.pdf || isGenerating.tex}
+                    >
+                      {isGenerating.pdf ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Compiling PDF...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Download className="w-5 h-5" />
+                          Download PDF
+                        </span>
+                      )}
+                    </Button>
 
-                      <a
-                        href={secureDownloadUrl}
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="px-5 py-2.5 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] text-[13px] font-medium rounded-lg transition-colors flex items-center justify-center shrink-0"
-                      >
-                        Download
-                      </a>
-                    </div>
-                  )}
+                    {/* Download LaTeX Button */}
+                    <Button 
+                      className="flex-1 bg-transparent hover:bg-white/5 text-[#fafafa] font-semibold py-6 rounded-2xl transition-all shadow-md group border border-[#27272a]"
+                      onClick={() => handleDownload('tex')}
+                      disabled={isGenerating.pdf || isGenerating.tex}
+                    >
+                      {isGenerating.tex ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Generating LaTeX...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <FileText className="w-5 h-5" />
+                          Download LaTeX
+                        </span>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               )}
 

@@ -139,8 +139,69 @@ export const processDocumentStream = async (req, res) => {
   }
 };
 
+/**
+ * Build the complete, compilable LaTeX document from agent state.
+ * Extracts from LangGraph checkpoint, post-processes (escapes bare &),
+ * and wraps with a full preamble.
+ */
+async function buildFinalLatex(thread) {
+  const { buildGraph } = await import("../agent/graph.js");
+  const { checkpointer } = await import("../configs/sequelize.configs.js");
+
+  const graph = buildGraph({ checkpointer });
+  const agentRunId = thread.agentRunId;
+  if (!agentRunId) throw new Error("Agent has not been run for this thread yet");
+
+  const state = await graph.getState({ configurable: { thread_id: agentRunId } });
+  const rawBodyLatex = state.values?.document_latex;
+  if (!rawBodyLatex) throw new Error("No compiled latex document exists for this thread yet");
+
+  // Post-process: escape bare & outside tabular environments.
+  const bodyLatex = rawBodyLatex
+    .split(/(\\begin\{tabular\}[\s\S]*?\\end\{tabular\})/g)
+    .map((part, i) => {
+      if (i % 2 === 1) return part;
+      return part.replace(/(?<!\\)&/g, '\\&');
+    })
+    .join('');
+
+  return `\\documentclass[12pt]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{lmodern}
+\\usepackage{amsmath,amssymb}
+\\usepackage{graphicx}
+\\usepackage{url}
+\\usepackage{hyperref}
+\\usepackage[numbers]{natbib}
+\\usepackage{geometry}
+\\geometry{margin=1in}
+\\usepackage{setspace}
+\\usepackage{caption}
+\\usepackage{float}
+\\usepackage{booktabs}
+\\usepackage{microtype}
+
+% Define \\doi command used by the agent for DOI placeholders
+\\providecommand{\\doi}[1]{\\texttt{doi:#1}}
+
+\\begin{document}
+
+${bodyLatex.trim()}
+
+\\end{document}
+`;
+}
+
+/**
+ * @route   GET /api/document/finalize/:threadId?format=tex|pdf
+ * @desc    Generate a downloadable LaTeX or compiled PDF for the thread.
+ *          - format=tex (default): uploads .tex to Cloudinary, returns signed URL
+ *          - format=pdf: compiles via latexonline.cc, streams PDF to browser
+ */
 export const finalizeDocument = async (req, res) => {
   const { threadId } = req.params;
+  const format = (req.query.format || "tex").toLowerCase();
   const userId = req.user?.id || req.user?.userId || "anon";
 
   try {
@@ -149,41 +210,58 @@ export const finalizeDocument = async (req, res) => {
       return res.status(404).json({ error: "Thread not found" });
     }
 
-    let publicId = thread.finalDocumentId;
+    const finalLatex = await buildFinalLatex(thread);
 
-    if (!publicId) {
-      // 1. Fetch latest agent state from postgres checkpointer
-      const { buildGraph } = await import("../agent/graph.js");
-      const { checkpointer } = await import("../configs/sequelize.configs.js");
-      const { uploadLatexToCloudinary } = await import("../configs/cloudinary.configs.js");
-      
-      const graph = buildGraph({ checkpointer });
-      const state = await graph.getState({ configurable: { thread_id: threadId } });
-      const finalLatex = state.values?.document_latex;
-
-      if (!finalLatex) {
-        return res.status(400).json({ error: "No compiled latex document exists for this thread yet" });
-      }
-
-      // 2. Upload to cloudinary utilizing the Buffer
+    // ── TEX download ──────────────────────────────────────────────────────
+    if (format === "tex") {
+      const { uploadLatexToCloudinary, generateDownloadUrl } = await import("../configs/cloudinary.configs.js");
       const uploadResult = await uploadLatexToCloudinary(finalLatex, threadId, userId);
-
-      // 3. Save the cloudinary public_id to your Thread table
-      await Thread.update(
-        { finalDocumentId: uploadResult.public_id }, 
-        { where: { threadId } }
-      );
-      
-      publicId = uploadResult.public_id;
+      await Thread.update({ finalDocumentId: uploadResult.public_id }, { where: { threadId } });
+      const signedLink = generateDownloadUrl(uploadResult.public_id);
+      return res.status(200).json({ downloadUrl: signedLink });
     }
 
-    // 4. Generate the signed download link dynamically from the known public_id
-    const { generateDownloadUrl } = await import("../configs/cloudinary.configs.js");
-    const signedLink = generateDownloadUrl(publicId);
-    return res.status(200).json({ downloadUrl: signedLink });
+    // ── PDF download ──────────────────────────────────────────────────────
+    if (format === "pdf") {
+      // Use latex.ytotech.com REST API — accepts JSON, returns compiled PDF
+      const compileResponse = await fetch("https://latex.ytotech.com/builds/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          compiler: "pdflatex",
+          resources: [
+            { main: true, content: finalLatex }
+          ]
+        }),
+      });
+
+      if (!compileResponse.ok) {
+        const errText = await compileResponse.text().catch(() => "Unknown compilation error");
+        console.error("[PDF Compile] ytotech error:", compileResponse.status, errText);
+        return res.status(502).json({ error: "PDF compilation failed. The LaTeX may contain errors." });
+      }
+
+      const fileName = (thread.title || "manuscript").replace(/\.[^.]+$/, "");
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${fileName}.pdf"`);
+
+      // Stream the PDF response body directly to the client
+      const reader = compileResponse.body.getReader();
+      const pump = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+        res.end();
+      };
+      return pump();
+    }
+
+    return res.status(400).json({ error: `Invalid format "${format}". Use "pdf" or "tex".` });
 
   } catch (err) {
     console.error("Finalize Document Error:", err);
-    return res.status(500).json({ error: "Failed to generate secure document URL" });
+    return res.status(500).json({ error: err.message || "Failed to generate document" });
   }
 };

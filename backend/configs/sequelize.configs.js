@@ -11,10 +11,10 @@ export const sequelize = new Sequelize(
     dialect: "postgres",
     pool: { max: 20, min: 2, acquire: 30000, idle: 2000, maxUses: 7500 },
     dialectOptions: {
-      ssl: IS_PRODUCTION ? {
-        require: true,             // force SSL usage
+      ssl: {
+        require: true,             // Supabase always requires SSL
         rejectUnauthorized: false, // skip cert validation
-      } : false,
+      },
     },
     logging: IS_PRODUCTION ? false : console.log, // show queries in dev
   }
@@ -47,7 +47,7 @@ export const pgPool = new Pool({
   idleTimeoutMillis: 30000,   // 30 sec
   
   // --- Security & Maintenance ---
-  ssl: IS_PRODUCTION ? { rejectUnauthorized: false } : false,
+  ssl: { rejectUnauthorized: false }, // Supabase always requires SSL
   maxUses: 7500 
 });
 

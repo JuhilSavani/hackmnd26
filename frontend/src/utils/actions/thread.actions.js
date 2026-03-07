@@ -31,10 +31,19 @@ export const deleteThreadAction = async (threadId) => {
   }
 };
 
-export const generateSecureUrlAction = async (threadId) => {
+export const generateSecureUrlAction = async (threadId, format = "tex") => {
   try {
-    // Note: uses the document routes from index.js
-    const { data } = await axios.get(`/document/finalize/${threadId}`);
+    if (format === "pdf") {
+      // PDF: backend streams binary PDF directly — use blob response
+      const response = await axios.get(`/document/finalize/${threadId}?format=pdf`, {
+        responseType: "blob",
+      });
+      const blobUrl = URL.createObjectURL(response.data);
+      return { downloadUrl: blobUrl, error: null };
+    }
+
+    // TEX: backend returns JSON with a signed Cloudinary URL
+    const { data } = await axios.get(`/document/finalize/${threadId}?format=tex`);
     return { downloadUrl: data.downloadUrl, error: null };
   } catch (error) {
     console.error("Failed to generate secure URL:", error);
