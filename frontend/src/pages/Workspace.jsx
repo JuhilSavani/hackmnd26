@@ -49,6 +49,7 @@ function MainContent({ setThreads }) {
   const [stepsExpanded, setStepsExpanded] = useState(false);
   const [downloadUrls, setDownloadUrls] = useState({ pdf: null, tex: null });
   const [isGenerating, setIsGenerating] = useState({ pdf: false, tex: false });
+  const [complianceScore, setComplianceScore] = useState(null);
   const abortStreamRef = useRef(null);
   const currentThreadIdRef = useRef(null);
 
@@ -64,6 +65,7 @@ function MainContent({ setThreads }) {
       setStepsExpanded(false);
       setDownloadUrls({ pdf: null, tex: null });
       setIsGenerating({ pdf: false, tex: false });
+      setComplianceScore(null);
       setIsUploading(false);
       return;
     }
@@ -83,6 +85,7 @@ function MainContent({ setThreads }) {
     setStepsExpanded(false);
     setDownloadUrls({ pdf: null, tex: null });
     setIsGenerating({ pdf: false, tex: false });
+    setComplianceScore(null);
     setIsUploading(false);
     setError(null);
 
@@ -108,6 +111,7 @@ function MainContent({ setThreads }) {
              if (agentState.detectSummary) newNodeText.node1 = agentState.detectSummary;
              if (agentState.fixSummary) newNodeText.node3 = agentState.fixSummary;
              setNodeText(newNodeText);
+             if (agentState.complianceScore) setComplianceScore(agentState.complianceScore);
              
              // If we have summaries, assume the pipeline was completed
              if (agentState.detectSummary || agentState.fixSummary) {
@@ -141,6 +145,7 @@ function MainContent({ setThreads }) {
     setNodeText({});
     setPipelineComplete(false);
     setDownloadUrls({ pdf: null, tex: null });
+    setComplianceScore(null);
 
     // Optimistic UI — show the document card immediately
     const currentSubmission = {
@@ -236,6 +241,8 @@ function MainContent({ setThreads }) {
                 return [...prev, { type: 'loading', text: msg, id: Date.now() + Math.random() }];
               });
             }
+          } else if (event.type === 'compliance_score') {
+            setComplianceScore(event.val);
           } else if (event.type === 'node_end') {
             setExtractionLogs(prev => [...prev, { type: 'success', text: `Agent finished: ${friendlyName}`, id: Date.now() + Math.random() }]);
           }
@@ -430,6 +437,52 @@ function MainContent({ setThreads }) {
                         </div>
                       )}
 
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Compliance Dashboard */}
+              {complianceScore && complianceScore.rules && complianceScore.rules.length > 0 && (
+                <div className="w-full px-2 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-[#18181b] rounded-2xl border border-white/5 p-6 shadow-sm">
+                    {/* Header with Overall Score */}
+                    <div className="flex items-center justify-between mb-5">
+                      <div>
+                        <h3 className="text-[15px] font-semibold text-[#fafafa] mb-1">Compliance Score</h3>
+                        <p className="text-[12px] text-[#71717a]">{complianceScore.total_fixes_applied} fix{complianceScore.total_fixes_applied !== 1 ? 'es' : ''} applied</p>
+                      </div>
+                      <div className="relative w-16 h-16">
+                        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#27272a" strokeWidth="3" />
+                          <circle cx="18" cy="18" r="15.5" fill="none"
+                            stroke={complianceScore.overall_score >= 80 ? '#22c55e' : complianceScore.overall_score >= 50 ? '#eab308' : '#ef4444'}
+                            strokeWidth="3" strokeLinecap="round"
+                            strokeDasharray={`${complianceScore.overall_score * 0.9738} 97.38`}
+                          />
+                        </svg>
+                        <span className={`absolute inset-0 flex items-center justify-center text-[15px] font-bold ${
+                          complianceScore.overall_score >= 80 ? 'text-green-400' : complianceScore.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                        }`}>{complianceScore.overall_score}</span>
+                      </div>
+                    </div>
+
+                    {/* Rules Table */}
+                    <div className="space-y-1.5">
+                      {complianceScore.rules.map((rule, i) => (
+                        <div key={i} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-black/20 border border-white/5">
+                          <span className="text-[14px] w-5 shrink-0">
+                            {rule.status === 'pass' ? '✅' : rule.status === 'warning' ? '⚠️' : '❌'}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] text-[#e4e4e7] font-medium truncate">{rule.name}</div>
+                            <div className="text-[11px] text-[#71717a] truncate">{rule.detail}</div>
+                          </div>
+                          <span className={`text-[13px] font-mono font-semibold shrink-0 ${
+                            rule.status === 'pass' ? 'text-green-400' : rule.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                          }`}>{rule.score}/{rule.max}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

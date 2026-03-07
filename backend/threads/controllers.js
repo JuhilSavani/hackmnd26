@@ -87,7 +87,8 @@ export const getThreadById = async (req, res) => {
       if (state && state.values) {
         agentState = {
           detectSummary: state.values.detect_summary || null,
-          fixSummary: state.values.fix_summary || null
+          fixSummary: state.values.fix_summary || null,
+          complianceScore: state.values.compliance_score || null,
         };
       }
     } catch (graphError) {
