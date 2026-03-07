@@ -81,12 +81,14 @@ export const getThreadById = async (req, res) => {
     let agentState = null;
     try {
       const graphWithPersistence = buildGraph({ checkpointer });
-      const state = await graphWithPersistence.getState({ configurable: { thread_id: threadId } });
+      const lgThreadId = thread.agentRunId || threadId; // fallback for old threads
+      const state = await graphWithPersistence.getState({ configurable: { thread_id: lgThreadId } });
       
       if (state && state.values) {
         agentState = {
           detectSummary: state.values.detect_summary || null,
-          fixSummary: state.values.fix_summary || null
+          fixSummary: state.values.fix_summary || null,
+          complianceScore: state.values.compliance_score || null,
         };
       }
     } catch (graphError) {

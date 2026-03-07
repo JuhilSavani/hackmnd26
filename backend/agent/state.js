@@ -11,31 +11,16 @@ export const IssueSchema = z
   .object({
     id: z
       .string()
-      .regex(/^issue_\d{3}$/)
       .describe(
-        "Unique issue identifier. Format: issue_001, issue_002, ... in sequence."
+        "Unique issue identifier. Format: issue_001, issue_002, ... or remaining_001, remaining_002, ... in sequence."
       ),
 
     type: z
-      .enum([
-        "missing_doi",
-        "unmatched_citation",
-        "duplicate_reference",
-        "broken_ref_numbering",
-        "heading_hierarchy_violation",
-        "mixed_figure_label",
-        "incorrect_author_format",
-        "spacing_deviation",
-        "margin_deviation",
-        "font_deviation",
-        "abstract_format",
-        "title_page_format",
-      ])
-      .describe("Category of the formatting violation. Pick the single most specific type."),
+      .string()
+      .describe("Category of the formatting violation. Pick the single most specific type from: missing_doi, unmatched_citation, duplicate_reference, broken_ref_numbering, heading_hierarchy_violation, mixed_figure_label, incorrect_author_format, spacing_deviation, margin_deviation, font_deviation, abstract_format, title_page_format."),
 
     description: z
       .string()
-      .min(20)
       .describe(
         "Specific, actionable description of what is wrong and where. " +
           "Must name the exact \\bibitem key, \\cite key, heading text, or " +
@@ -44,7 +29,6 @@ export const IssueSchema = z
 
     location: z
       .string()
-      .min(1)
       .describe(
         "Exact LaTeX anchor where the issue occurs. Examples: " +
           "'\\\\bibitem{smith2019}', '\\\\cite{zhao2024}', '\\\\section{Methods}', " +
@@ -57,7 +41,6 @@ export const DetectionOutputSchema = z
   .object({
     target_journal: z
       .string()
-      .min(1)
       .describe(
         "Specific journal name or citation style detected. " +
           "Be precise: 'APA 7th Edition', 'Vancouver', 'PNAS house style', 'IEEE'. " +
@@ -66,10 +49,8 @@ export const DetectionOutputSchema = z
 
     summary: z
       .string()
-      .min(50)
-      .max(600)
       .describe(
-        "2–3 sentences covering: total number of issues found, which categories " +
+        "2-3 sentences covering: total number of issues found, which categories " +
           "dominate, and overall compliance level. Do not list individual issues here."
       ),
 
@@ -84,7 +65,6 @@ export const DetectionOutputSchema = z
 
     document_latex: z
       .string()
-      .min(100)
       .describe(
         "Complete LaTeX conversion of the ENTIRE manuscript — body and bibliography. " +
           "Do not truncate, summarize, or omit any section. " +
@@ -97,12 +77,10 @@ export const FixSchema = z
   .object({
     id: z
       .string()
-      .regex(/^fix_\d{3}$/)
       .describe("Unique fix identifier. Format: fix_001, fix_002, ... in sequence."),
 
     issue_ref: z
       .string()
-      .regex(/^issue_\d{3}$/)
       .describe(
         "The id of the issue this fix resolves. Must match an id from detected_issues. " +
           "Multiple fix objects may share the same issue_ref when one issue " +
@@ -111,7 +89,6 @@ export const FixSchema = z
 
     description: z
       .string()
-      .min(10)
       .describe(
         "Human-readable changelog entry. Specific: name the \\bibitem key or " +
           "heading being fixed. Example: 'Added \\doi{UNKNOWN} to smith2019 reference'."
@@ -119,7 +96,6 @@ export const FixSchema = z
 
     target: z
       .string()
-      .min(5)
       .describe(
         "VERBATIM substring from document_latex to find and replace. " +
           "Must appear EXACTLY ONCE in the document. " +
@@ -169,6 +145,24 @@ export const CriticOutputSchema = z
       ),
   })
   .describe("Structured output from Node 3 critic validation pass.");
+
+export const ComplianceRuleSchema = z
+  .object({
+    name: z.string().describe("Category name, e.g. 'Citation Integrity', 'DOI Fields'."),
+    status: z.enum(["pass", "warning", "fail"]).describe("pass = fully compliant, warning = minor issues, fail = major violation."),
+    score: z.number().int().min(0).max(10).describe("Score out of 10 for this rule."),
+    max: z.number().int().describe("Maximum possible score. Always set to 10."),
+    detail: z.string().describe("One-line explanation of what was checked and the result."),
+  })
+  .describe("Score for a single compliance rule.");
+
+export const ComplianceScoreSchema = z
+  .object({
+    overall_score: z.number().int().min(0).max(100).describe("Sum of all rule scores. 0-100."),
+    rules: z.array(ComplianceRuleSchema).min(1).describe("Rule scores, one per validation check. Should have 10 entries."),
+    total_fixes_applied: z.number().int().min(0).describe("Total number of fixes applied across all iterations."),
+  })
+  .describe("Compliance scoring output from the final validation pass.");
 
 // ── LangGraph Annotation state ────────────────────────────────────────────────
 
@@ -245,6 +239,12 @@ export const PipelineAnnotation = Annotation.Root({
   iteration: Annotation({
     reducer: (_, b) => b,
     default: () => 0,
+  }),
+
+  // ── Compliance Score ──────────────────────────────────────────────────────
+  compliance_score: Annotation({
+    reducer: (_, b) => b,
+    default: () => null,
   }),
 
   // ── Final output ─────────────────────────────────────────────────────────────

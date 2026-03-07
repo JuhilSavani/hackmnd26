@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { buildGraph } from "./graph.js";
 import { Thread } from "../models/thread.models.js";
 import { checkpointer } from "../configs/sequelize.configs.js";
@@ -36,6 +37,12 @@ export const streamAgent = async (req, res) => {
       res.write(`data: ${JSON.stringify(eventPayload)}\n\n`);
     };
 
+    // Generate a fresh LangGraph thread ID for every agent run.
+    // Reusing the same thread_id causes LangGraph to resume from the END
+    // checkpoint which sends empty contents to Gemini → 400 "empty input".
+    const agentRunId = randomUUID();
+    await Thread.update({ agentRunId }, { where: { threadId } });
+
     const graph = buildGraph({ checkpointer });
 
     const stream = await graph.streamEvents(
@@ -47,7 +54,7 @@ export const streamAgent = async (req, res) => {
       {
         version: "v2",
         configurable: { 
-          thread_id: threadId,
+          thread_id: agentRunId,
           streamCallback
         },
         signal: controller.signal,

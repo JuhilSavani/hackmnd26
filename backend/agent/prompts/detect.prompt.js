@@ -225,7 +225,22 @@ Incomplete conversion = broken pipeline.
 - Figures: \`\\begin{figure}[h]\\centering\\caption{...}\\label{fig:X}\\end{figure}\`
 - Sub-panels: Create ONE label per figure (\`\\label{fig:1}\`). Refer to panels as \`Fig.~\\ref{fig:1}A\`. NEVER create \`\\label{fig:1A}\`.
 - Supplementary figures: Plain text, no \\ref{} (\`(Fig.~S1)\`)
-- Tables: \`\\begin{table}[h]\\centering\\caption{...}\\label{tab:1}\\begin{tabular}{lcc}...\\end{tabular}\\end{table}\` (No vertical lines)
+- Tables: Always use the FULL structure below — never emit bare \\& characters outside a tabular environment:
+  \`\`\`
+  \\begin{table}[h]
+  \\centering
+  \\caption{Caption text}
+  \\label{tab:1}
+  \\begin{tabular}{lcc}
+  \\hline
+  Col1 & Col2 & Col3 \\\\
+  \\hline
+  A    & B    & C    \\\\
+  \\hline
+  \\end{tabular}
+  \\end{table}
+  \`\`\`
+  CRITICAL: Every & separator and \\\\ row-end MUST be inside \\begin{tabular}...\\end{tabular}. Never place table rows in plain text.
 
 **Citations and Bibliography:**
 - Reference entries  → \`\\bibitem{key}\` inside \`\\begin{thebibliography}{99}\`

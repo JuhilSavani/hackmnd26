@@ -52,6 +52,10 @@ export const Thread = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    agentRunId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "threads",
