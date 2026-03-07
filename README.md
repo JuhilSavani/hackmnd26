@@ -35,24 +35,24 @@ Our application uses a LangGraph-orchestrated AI agent pipeline.
 
 ### LangGraph Pipeline (`backend/agent/`)
 
-The core intelligence is powered by a 3-node LangGraph cyclic workflow using Anthropic Claude (claude-sonnet-4-6) or Google Gemini models via `@langchain/google-genai`.
+The core intelligence is powered by a 3-node LangGraph cyclic workflow using Google Gemini (`gemini-2.5-flash` for structured reasoning, `gemini-2.5-flash-lite` for streaming summaries) via `@langchain/google-genai`.
 
-1. **Node 1: Detection + LaTeX Conversion (`node1_detect.js`)**
+1. **Node 1: Detection & LaTeX Conversion (`node1_detect.js`)**
    - **Inputs:** `document_content`, `document_metadata` (DOCX only), `parsed_guidelines_content`
-   - **Operations:** Identifies target journal guidelines and existing formatting issues (e.g., missing DOIs, duplicate references, hierarchy violations). Converts the complete document into a `.tex` standard representation.
-   - **Output:** Extracts structured JSON of formatting issues and streams a summary to the user.
+   - **Operations:** Identifies the target journal and citation style from provided guidelines. Detects all formatting violations (e.g., missing DOIs, duplicate references, heading hierarchy issues, figure label inconsistencies). Converts the complete document into a LaTeX (`.tex`) representation for precise patching.
+   - **Output:** Structured JSON of detected issues, full LaTeX source, and a streamed natural-language summary for the user.
 
 2. **Node 2: Fix Generation (`node2_fix.js`)**
-   - **Operations:** Generates precise `target` (find) and `replacement` (replace) LaTeX patches for every detected issue. 
-   - **Looping Logic:** Driven by `state.is_loop`, on the first run, it addresses all found issues. In loop mode (when issues persist), it strictly targets remaining unresolved problems securely.
+   - **Operations:** Generates precise `target` (find) and `replacement` (replace) LaTeX patches for every detected issue.
+   - **Looping Logic:** Driven by `state.is_loop` — on the first run, it addresses all found issues. In loop mode (when issues persist), it strictly targets remaining unresolved problems.
 
 3. **Node 3: Critic & Validation (`node3_critic.js`)**
-   - **Operations:** Applies the generated exact-match text string patches to the LaTeX document. 
-   - **Validation:** Performs strict academic validation against the CSL rules and journal parameters (verifying `\cite` to `\bibitem` matches, heading hierarchies, figure conventions).
+   - **Operations:** Applies the generated exact-match text string patches to the LaTeX document.
+   - **Validation:** Performs strict academic validation against the CSL rules and journal parameters (verifying `\cite` to `\bibitem` matches, heading hierarchies, figure conventions). Generates a per-rule compliance scorecard.
    - **Routing:** If unresolved issues remain and iteration limit is not reached, loops back to Node 2 for targeted refinements. If fully compliant, proceeds to file output phase.
 
 ### Output Generation
-The final, validated LaTeX source is saved and compiled to generate a downloadable final version file alongside a detailed changelog of applied fixes.
+The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to refise the output in real time with a side-by-side PDF preview.
 
 ---
 
@@ -62,15 +62,17 @@ The final, validated LaTeX source is saved and compiled to generate a downloadab
 - **Framework:** React 19 + Vite 7
 - **Styling:** TailwindCSS v4 + shadcn/ui
 - **Icons & Routing:** Lucide React, React Router DOM v7
+- **Forms:** React Hook Form, React Dropzone
 
 ### Backend & Orchestration
 - **API Server:** Node.js + Express 5
 - **Agent Framework:** LangGraph (`@langchain/langgraph`), `@langchain/core`, `zod`
-- **LLMs:** Anthropic Claude (claude-sonnet-4-6) / Google Gemini Models
+- **LLM:** Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-lite`) via `@langchain/google-genai`
 - **Auth:** Supabase Auth + Google OAuth 2.0 + Passport.js (JWT)
 - **Database:** PostgreSQL + Sequelize ORM (Supabase connection pooling)
 - **Storage:** Cloudinary (Document/PDF uploads and generated outputs)
 - **Extraction Tools:** `unpdf`, `jszip`, `mammoth.js`, `fast-xml-parser`
+- **Web Scraping:** Firecrawl (journal guideline extraction)
 
 ---
 
@@ -81,18 +83,36 @@ hackmnd26/
 ├── backend/                            # Express v5 API server
 │   ├── agent/                          # AI agent workflow (LangGraph)
 │   │   ├── nodes/                      # Graph nodes (detect, fix, critic)
-│   │   ├── prompts/                    # LLM Prompts
+│   │   ├── prompts/                    # LLM prompts (detect, fix, critic)
+│   │   ├── controllers.js              # Agent endpoint logic
 │   │   ├── graph.js                    # LangGraph orchestration
+│   │   ├── routes.js                   # Agent API routes
 │   │   └── state.js                    # LangGraph global state schemas (Zod)
 │   ├── auth/                           # Authentication service
+│   ├── clients/                        # External service clients (Supabase, Google OAuth)
+│   ├── configs/                        # Configuration (Cloudinary, Passport, Sequelize)
 │   ├── document/                       # Document processing endpoints
+│   ├── models/                         # Sequelize models (User, Thread)
 │   ├── threads/                        # Thread/history management
-│   └── upload/                         # Upload handling / Cloudinary actions
-├── frontend/                           # React 19 + Vite SPA
-│   ├── src/
-│   │   ├── components/ui/              # shadcn UI core components
-│   │   ├── pages/                      # Feature pages
-│   │   └── utils/actions/              # API actions/calls (auth, stream, upload)
+│   ├── upload/                         # Upload handling / Cloudinary actions
+│   ├── utils/                          # Document extractors (DOCX, PDF)
+│   └── index.js                        # Express server entry point
+└── frontend/                           # React 19 + Vite SPA
+    └── src/
+        ├── components/ui/              # shadcn UI core components
+        ├── hooks/                      # React hooks (mobile detection)
+        ├── lib/                        # Utility library (cn helper)
+        ├── pages/                      # Feature pages
+        │   ├── LandingPage.jsx         # Marketing / landing page
+        │   ├── LatexEditorPage.jsx     # Live LaTeX editor with PDF preview
+        │   ├── LoginPage.jsx           # Login page
+        │   ├── RegisterPage.jsx        # Registration page
+        │   └── Workspace.jsx           # Main agent workspace
+        └── utils/
+            ├── actions/                # API actions (auth, stream, upload, document, thread)
+            ├── components/             # Shared components (Sidebar, DocumentUpload, etc.)
+            ├── contexts/               # React contexts (Auth, Theme)
+            └── hooks/                  # Custom hooks (auth, OAuth, logout, theme)
 ```
 
 ---
@@ -104,7 +124,7 @@ hackmnd26/
 - Supabase project and DB credentials
 - Cloudinary Storage
 - Google OAuth Application Credentials
-- API key for Anthropic/Gemini Langchain configurations
+- Gemini API Key
 
 ### 1. Environment Setup
 
@@ -124,8 +144,8 @@ SUPABASE_PROJECT_URL="..."
 SUPABASE_SERVICE_ROLE_KEY="..."
 SUPABASE_PG_POOLER="..."
 
-# For Local LLM Pipeline Nodes:
-GOOGLE_API_KEY="..."
+# Gemini LLM (used by all pipeline nodes)
+GEMINI_API_KEY="..."
 ```
 
 **`frontend/.env`**
