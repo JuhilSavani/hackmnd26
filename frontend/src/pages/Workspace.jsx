@@ -54,6 +54,7 @@ function MainContent({ setThreads }) {
   const [complianceScore, setComplianceScore] = useState(null);
   const abortStreamRef = useRef(null);
   const currentThreadIdRef = useRef(null);
+  const bottomRef = useRef(null);
 
   // LOAD THREAD EFFECT — mirrors the ChatWindow pattern
   useEffect(() => {
@@ -140,6 +141,13 @@ function MainContent({ setThreads }) {
       if (abortStreamRef.current) abortStreamRef.current();
     };
   }, []);
+
+  // Auto-scroll to bottom when streaming content updates
+  useEffect(() => {
+    if (!pipelineComplete || isUploading) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [extractionLogs, nodeText, complianceScore, pipelineComplete, isUploading]);
 
   // SUBMIT HANDLER — receives { file, guidelinesUrl } from DocumentUpload
   const handleSubmit = async ({ file, guidelinesUrl }) => {
@@ -572,6 +580,7 @@ function MainContent({ setThreads }) {
             <div className="text-red-400 text-center p-4 border border-red-500/20 bg-red-500/5 rounded-lg">{error}</div>
           </div>
         )}
+        <div ref={bottomRef} />
       </div>
     </SidebarInset>
   );
