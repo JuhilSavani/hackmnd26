@@ -89,7 +89,7 @@ export default function DocumentUpload({ onSubmit, isUploading = false }) {
                   </div>
                   <div>
                     <p className="text-[#fafafa] font-medium mb-1">Click to upload or drag and drop</p>
-                    <p className="text-xs text-[#a1a1aa]">DOCX, PDF, or Plain Text (Max 50MB)</p>
+                    <p className="text-xs text-[#a1a1aa]">DOCX, PDF, or Plain Text (.txt) (Max 50MB)</p>
                   </div>
                 </>
               )}

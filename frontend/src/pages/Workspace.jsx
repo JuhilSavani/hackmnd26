@@ -8,7 +8,7 @@ import DocumentUpload from '@/utils/components/DocumentUpload';
 import { useAuth } from '@/utils/hooks/useAuth';
 import { loadThreadDetailsAction } from '@/utils/actions/thread.actions';
 import { generateSecureUrlAction } from '@/utils/actions/thread.actions';
-import { uploadPdfToCloudinary } from '@/utils/actions/upload.actions';
+import { uploadDocumentToCloudinary } from '@/utils/actions/upload.actions';
 import { streamDocumentExtraction, streamAgentExecution } from '@/utils/actions/stream.actions';
 
 const SidebarInactiveIcon = ({ className = "w-5 h-5" }) => (
@@ -171,7 +171,7 @@ function MainContent({ setThreads }) {
       }
 
       // 1. Upload to Cloudinary
-      const cloudinaryResult = await uploadPdfToCloudinary(file);
+      const cloudinaryResult = await uploadDocumentToCloudinary(file);
 
       const payload = {
         threadId: activeThreadId,

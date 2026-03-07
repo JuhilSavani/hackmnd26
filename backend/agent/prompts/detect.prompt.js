@@ -35,10 +35,10 @@ ${
 \`\`\`json
 ${JSON.stringify(formatting_metadata, null, 2)}
 \`\`\``
-    : `## INPUT TYPE: PDF — NO FORMATTING METADATA AVAILABLE
+    : `## INPUT TYPE: PDF OR PLAIN TEXT — NO FORMATTING METADATA AVAILABLE
 Do NOT flag font_deviation or spacing_deviation unless the deviation is explicitly
 stated in the document text itself (e.g., a style block, embedded metadata string, or document header).
-Guessing fonts or spacing from plain text is forbidden.`
+Guessing fonts or spacing from plain text or scraped PDF data is forbidden.`
 }
 
 ${

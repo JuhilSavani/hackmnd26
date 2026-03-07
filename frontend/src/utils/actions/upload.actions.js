@@ -1,7 +1,7 @@
 import axios from "../axios.js";
 
 /**
- * Uploads a PDF (or any file) to Cloudinary using signed upload.
+ * Uploads a document (PDF, DOCX, TXT) to Cloudinary using signed upload.
  * 
  * Flow:
  * 1. Request a signature from our backend
@@ -10,7 +10,7 @@ import axios from "../axios.js";
  * @param {File} file - The file to upload
  * @returns {Promise<{secure_url, public_id, ...}>} Cloudinary response
  */
-export async function uploadPdfToCloudinary(file) {
+export async function uploadDocumentToCloudinary(file) {
   // 1. Get signature from our backend
   const { data: signData } = await axios.post("/upload/sign");
   const { signature, timestamp, folder, apiKey, cloudName } = signData;
@@ -30,7 +30,7 @@ export async function uploadPdfToCloudinary(file) {
   formData.append("access_mode", "authenticated");
 
   // 3. Upload directly to Cloudinary
-  // Note: Use "/raw/upload" for non-image/video files like PDFs. 
+  // Note: Use "/raw/upload" for non-image/video files like PDFs, DOCX, TXTs. 
   // Change "raw" to "image" or "video" appropriately based on file type.
   const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`;
 

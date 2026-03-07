@@ -4,14 +4,14 @@ import { DetectionOutputSchema } from "../state.js";
 import { buildDetectPrompt } from "../prompts/detect.prompt.js";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash",
+  model: "gemini-3-flash-preview",
   temperature: 0,
   apiKey: process.env.GEMINI_API_KEY,
 }).withStructuredOutput(DetectionOutputSchema);
 
 const streamModel = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash-lite",
-  temperature: 0.3,
+  model: "gemini-3-flash-preview",
+  temperature: 0,
   streaming: true,
   apiKey: process.env.GEMINI_API_KEY,
 });
