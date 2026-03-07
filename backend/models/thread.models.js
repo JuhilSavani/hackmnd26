@@ -52,6 +52,14 @@ export const Thread = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    latexDraft: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    latexDraftUpdatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     agentRunId: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -71,4 +79,3 @@ export const Thread = sequelize.define(
 // Define Associations
 User.hasMany(Thread, { foreignKey: "userId", as: "threads" });
 Thread.belongsTo(User, { foreignKey: "userId", as: "user" });
-

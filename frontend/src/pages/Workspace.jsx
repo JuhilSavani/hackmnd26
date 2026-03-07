@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { FileText, Loader2, Check, Download } from 'lucide-react';
+import { FileText, Loader2, Check, Download, SquarePen } from 'lucide-react';
 import Sidebar from '@/utils/components/Sidebar';
 import DocumentUpload from '@/utils/components/DocumentUpload';
 import { useAuth } from '@/utils/hooks/useAuth';
@@ -47,7 +47,9 @@ function MainContent({ setThreads }) {
   const [nodeText, setNodeText] = useState({});
   const [pipelineComplete, setPipelineComplete] = useState(false);
   const [stepsExpanded, setStepsExpanded] = useState(false);
+  const [complianceExpanded, setComplianceExpanded] = useState(false);
   const [downloadUrls, setDownloadUrls] = useState({ pdf: null, tex: null });
+  const [downloadFormat, setDownloadFormat] = useState('pdf');
   const [isGenerating, setIsGenerating] = useState({ pdf: false, tex: false });
   const [complianceScore, setComplianceScore] = useState(null);
   const abortStreamRef = useRef(null);
@@ -63,6 +65,7 @@ function MainContent({ setThreads }) {
       setNodeText({});
       setPipelineComplete(false);
       setStepsExpanded(false);
+      setComplianceExpanded(false);
       setDownloadUrls({ pdf: null, tex: null });
       setIsGenerating({ pdf: false, tex: false });
       setComplianceScore(null);
@@ -83,6 +86,7 @@ function MainContent({ setThreads }) {
     setNodeText({});
     setPipelineComplete(false);
     setStepsExpanded(false);
+    setComplianceExpanded(false);
     setDownloadUrls({ pdf: null, tex: null });
     setIsGenerating({ pdf: false, tex: false });
     setComplianceScore(null);
@@ -144,6 +148,7 @@ function MainContent({ setThreads }) {
     setExtractionLogs([]);
     setNodeText({});
     setPipelineComplete(false);
+    setComplianceExpanded(false);
     setDownloadUrls({ pdf: null, tex: null });
     setComplianceScore(null);
 
@@ -286,7 +291,7 @@ function MainContent({ setThreads }) {
   };
 
   const contentStateClasses = open 
-    ? "bg-[#09090b] my-2 mr-2 rounded-2xl border-white/5 shadow-2xl" 
+    ? "bg-[#09090b] my-2 mr-2 rounded-md border-white/5 shadow-2xl" 
     : "bg-[#09090b] m-0 rounded-none border-transparent";
 
   const isNewSession = !submission && !threadId;
@@ -328,9 +333,9 @@ function MainContent({ setThreads }) {
               
               {/* Blue Document Card */}
               <div className="w-full mb-2">
-                <div className="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4 w-full shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                <div className="bg-blue-600/10 border border-blue-500/20 rounded-md p-4 w-full shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="w-12 h-12 bg-[#18181b] rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm">
+                    <div className="w-12 h-12 bg-[#18181b] rounded-md flex items-center justify-center shrink-0 border border-white/10 shadow-sm">
                       <FileText className="w-6 h-6 text-blue-400" />
                     </div>
                     <div className="flex flex-col justify-center min-w-0 flex-1">
@@ -352,7 +357,7 @@ function MainContent({ setThreads }) {
               {(isUploading || extractionLogs.length > 0 || Object.keys(nodeText).length > 0) && (
                 <div className="flex gap-4 w-full">
                   <div className="flex-1 bg-transparent">
-                    <div className="bg-[#18181b] rounded-2xl p-5 border border-white/5 my-2 shadow-sm">
+                    <div className="border border-white/10 rounded-md bg-[#18181b]/50 p-5 my-2 shadow-sm">
 
                       {/* Task Steps — collapsible after completion */}
                       {pipelineComplete ? (
@@ -360,7 +365,7 @@ function MainContent({ setThreads }) {
                           <div className="mb-4">
                             <button
                               onClick={() => setStepsExpanded(prev => !prev)}
-                              className="flex items-center justify-between w-full px-4 py-3 bg-black/40 hover:bg-black/60 border border-white/5 rounded-xl text-sm font-medium text-[#fafafa] transition-all duration-200 select-none group"
+                              className="flex items-center justify-between w-full px-4 py-3 bg-black/40 hover:bg-black/60 border border-white/5 rounded-md text-sm font-medium text-[#fafafa] transition-all duration-200 select-none group"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="flex items-center justify-center w-7 h-7 rounded-full bg-green-500/10 text-green-500">
@@ -378,7 +383,7 @@ function MainContent({ setThreads }) {
                             <div
                               className={`overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] ${stepsExpanded ? 'max-h-[800px] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
                             >
-                              <div className="p-4 bg-black/20 rounded-xl border border-white/5 ml-1">
+                              <div className="p-4 bg-black/20 rounded-md border border-white/5 ml-1">
                                 <ul className="space-y-2.5 list-none pl-0 font-mono text-[12px]">
                                   {extractionLogs.map((log) => (
                                     <li key={log.id} className="flex items-center gap-3 text-[#a1a1aa]">
@@ -398,7 +403,7 @@ function MainContent({ setThreads }) {
                             Connecting to processing server...
                           </div>
                         ) : (
-                          <div className="p-4 bg-black/40 rounded-xl border border-white/5 mb-4">
+                          <div className="p-4 bg-black/40 rounded-md border border-white/5 mb-4">
                             <ul className="space-y-3 text-sm text-[#a1a1aa] list-none pl-0 font-mono text-[12px]">
                               {extractionLogs.map((log, index) => {
                                 const isLatest = index === extractionLogs.length - 1;
@@ -422,7 +427,7 @@ function MainContent({ setThreads }) {
                       {Object.keys(nodeText).length > 0 && (
                         <div className={`space-y-3 ${pipelineComplete ? '' : 'mt-4 pt-4 border-t border-white/5'}`}>
                           {Object.entries(nodeText).map(([node, text]) => (
-                            <div key={node} className="text-sm text-[#e4e4e7] bg-black/40 border border-white/5 p-4 rounded-xl leading-relaxed shadow-sm">
+                            <div key={node} className="text-sm text-[#e4e4e7] bg-black/40 border border-white/5 p-4 rounded-md leading-relaxed shadow-sm">
                               <div className="flex items-center gap-2 mb-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
                                 <span className="text-blue-400 font-semibold text-[11px] uppercase tracking-wider">
@@ -444,45 +449,62 @@ function MainContent({ setThreads }) {
 
               {/* Compliance Dashboard */}
               {complianceScore && complianceScore.rules && complianceScore.rules.length > 0 && (
-                <div className="w-full px-2 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="bg-[#18181b] rounded-2xl border border-white/5 p-6 shadow-sm">
-                    {/* Header with Overall Score */}
-                    <div className="flex items-center justify-between mb-5">
+                <div className="w-full mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="border border-white/10 rounded-md bg-[#18181b]/50 overflow-hidden">
+                    <button
+                      onClick={() => setComplianceExpanded(prev => !prev)}
+                      className="w-full flex items-center justify-between p-6 text-left focus:outline-none cursor-pointer group"
+                    >
                       <div>
-                        <h3 className="text-[15px] font-semibold text-[#fafafa] mb-1">Compliance Score</h3>
-                        <p className="text-[12px] text-[#71717a]">{complianceScore.total_fixes_applied} fix{complianceScore.total_fixes_applied !== 1 ? 'es' : ''} applied</p>
-                      </div>
-                      <div className="relative w-16 h-16">
-                        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#27272a" strokeWidth="3" />
-                          <circle cx="18" cy="18" r="15.5" fill="none"
-                            stroke={complianceScore.overall_score >= 80 ? '#22c55e' : complianceScore.overall_score >= 50 ? '#eab308' : '#ef4444'}
-                            strokeWidth="3" strokeLinecap="round"
-                            strokeDasharray={`${complianceScore.overall_score * 0.9738} 97.38`}
-                          />
-                        </svg>
-                        <span className={`absolute inset-0 flex items-center justify-center text-[15px] font-bold ${
-                          complianceScore.overall_score >= 80 ? 'text-green-400' : complianceScore.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'
-                        }`}>{complianceScore.overall_score}</span>
-                      </div>
-                    </div>
-
-                    {/* Rules Table */}
-                    <div className="space-y-1.5">
-                      {complianceScore.rules.map((rule, i) => (
-                        <div key={i} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-black/20 border border-white/5">
-                          <span className="text-[14px] w-5 shrink-0">
-                            {rule.status === 'pass' ? '✅' : rule.status === 'warning' ? '⚠️' : '❌'}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[13px] text-[#e4e4e7] font-medium truncate">{rule.name}</div>
-                            <div className="text-[11px] text-[#71717a] truncate">{rule.detail}</div>
-                          </div>
-                          <span className={`text-[13px] font-mono font-semibold shrink-0 ${
-                            rule.status === 'pass' ? 'text-green-400' : rule.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
-                          }`}>{rule.score}/{rule.max}</span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-[15px] font-semibold text-[#fafafa] group-hover:text-white transition-colors">Compliance Score</h3>
                         </div>
-                      ))}
+                        <p className="text-[13px] text-[#a1a1aa] group-hover:text-[#d4d4d8] transition-colors">{complianceScore.total_fixes_applied} fix{complianceScore.total_fixes_applied !== 1 ? 'es' : ''} applied</p>
+                      </div>
+                      <div className="flex items-center gap-6 text-left">
+                        <div className="relative w-14 h-14">
+                          <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#27272a" strokeWidth="3" />
+                            <circle cx="18" cy="18" r="15.5" fill="none"
+                              stroke={complianceScore.overall_score >= 80 ? '#22c55e' : complianceScore.overall_score >= 50 ? '#eab308' : '#ef4444'}
+                              strokeWidth="3" strokeLinecap="round"
+                              strokeDasharray={`${complianceScore.overall_score * 0.9738} 97.38`}
+                            />
+                          </svg>
+                          <span className={`absolute inset-0 flex items-center justify-center text-[14px] font-bold ${
+                            complianceScore.overall_score >= 80 ? 'text-green-400' : complianceScore.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                          }`}>{complianceScore.overall_score}</span>
+                        </div>
+                        <svg
+                          className={`w-5 h-5 transition-transform duration-300 text-[#a1a1aa] group-hover:text-white ${complianceExpanded ? 'rotate-180' : ''}`}
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                        >
+                          <path d="M19 9l-7 7-7-7"/>
+                        </svg>
+                      </div>
+                    </button>
+                    
+                    <div
+                      className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${complianceExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}
+                    >
+                      <div className="px-6 pb-6 text-[#a1a1aa] leading-relaxed">
+                        <div className="space-y-1.5 list-none">
+                          {complianceScore.rules.map((rule, i) => (
+                            <div key={i} className={`flex items-center gap-3 py-2 px-3 rounded-lg bg-black/20 border border-white/5 transition-opacity duration-300 delay-100 ${complianceExpanded ? 'opacity-100' : 'opacity-0'}`}>
+                              <span className="text-[14px] w-5 shrink-0 flex justify-center">
+                                {rule.status === 'pass' ? '✅' : rule.status === 'warning' ? '⚠️' : '❌'}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[13px] text-[#e4e4e7] font-medium truncate">{rule.name}</div>
+                                <div className="text-[11px] text-[#71717a] truncate">{rule.detail}</div>
+                              </div>
+                              <span className={`text-[13px] font-mono font-semibold shrink-0 ${
+                                rule.status === 'pass' ? 'text-green-400' : rule.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                              }`}>{rule.score}/{rule.max}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -490,45 +512,52 @@ function MainContent({ setThreads }) {
 
               {/* Download Buttons — PDF and LaTeX */}
               {pipelineComplete && (
-                <div className="w-full mb-4 px-2">
-                  <div className="flex gap-3">
-                    {/* Download PDF Button */}
-                    <Button 
-                      className="flex-1 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] font-semibold py-6 rounded-2xl transition-all shadow-md group border border-transparent"
-                      onClick={() => handleDownload('pdf')}
-                      disabled={isGenerating.pdf || isGenerating.tex}
-                    >
-                      {isGenerating.pdf ? (
+                <div className="w-full mb-4">
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex-[1.5] flex items-center justify-between gap-2 bg-[#18181b]/80 p-1.5 rounded-md border border-white/5 shadow-sm">
+                      <Button 
+                        className="flex-1 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] font-semibold h-[38px] rounded-md transition-all shadow-md group border border-transparent"
+                        onClick={() => handleDownload(downloadFormat)}
+                        disabled={isGenerating.pdf || isGenerating.tex}
+                      >
+                        {isGenerating[downloadFormat] ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            {downloadFormat === 'pdf' ? 'Compiling PDF...' : 'Generating LaTeX...'}
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            <Download className="w-4 h-4" />
+                            Download
+                          </span>
+                        )}
+                      </Button>
+                      <div className="flex items-center gap-2 pl-3 group">
+                        <span className="text-[11px] font-semibold text-[#a1a1aa] uppercase tracking-wider group-focus-within:text-[#fafafa] transition-colors">Format</span>
+                        <select 
+                          value={downloadFormat}
+                          onChange={(e) => setDownloadFormat(e.target.value)}
+                          className="bg-[#09090b] border border-white/10 text-[#fafafa] text-[13px] font-medium h-[38px] py-1 px-3 cursor-pointer rounded-md focus:ring-0 appearance-none outline-none pr-8 relative transition-colors hover:border-white/20"
+                          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}
+                          disabled={isGenerating.pdf || isGenerating.tex}
+                        >
+                          <option value="pdf">PDF</option>
+                          <option value="tex">LaTeX</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex-[1] flex bg-[#18181b]/80 p-1.5 rounded-md border border-white/5 shadow-sm">
+                      <Button
+                        className="flex-1 bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b] font-semibold h-[38px] rounded-md transition-all shadow-md group border border-transparent"
+                        onClick={() => navigate(`/workspace/${threadId}/editor`)}
+                        disabled={!threadId || isGenerating.pdf || isGenerating.tex}
+                      >
                         <span className="flex items-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Compiling PDF...
+                          <SquarePen className="w-5 h-5" />
+                          Edit LaTeX
                         </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Download className="w-5 h-5" />
-                          Download PDF
-                        </span>
-                      )}
-                    </Button>
-
-                    {/* Download LaTeX Button */}
-                    <Button 
-                      className="flex-1 bg-transparent hover:bg-white/5 text-[#fafafa] font-semibold py-6 rounded-2xl transition-all shadow-md group border border-[#27272a]"
-                      onClick={() => handleDownload('tex')}
-                      disabled={isGenerating.pdf || isGenerating.tex}
-                    >
-                      {isGenerating.tex ? (
-                        <span className="flex items-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Generating LaTeX...
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <FileText className="w-5 h-5" />
-                          Download LaTeX
-                        </span>
-                      )}
-                    </Button>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

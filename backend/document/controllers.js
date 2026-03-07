@@ -193,6 +193,125 @@ ${bodyLatex.trim()}
 `;
 }
 
+async function getThreadForUser(threadId, userId) {
+  const thread = await Thread.findOne({ where: { threadId, userId } });
+  if (!thread) {
+    const error = new Error("Thread not found");
+    error.status = 404;
+    throw error;
+  }
+  return thread;
+}
+
+async function compileLatexToPdf(latex) {
+  const compileResponse = await fetch("https://latex.ytotech.com/builds/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      compiler: "pdflatex",
+      resources: [{ main: true, content: latex }],
+    }),
+  });
+
+  if (!compileResponse.ok) {
+    const errText = await compileResponse.text().catch(() => "Unknown compilation error");
+    const error = new Error("PDF compilation failed. The LaTeX may contain errors.");
+    error.status = 422;
+    error.details = errText;
+    throw error;
+  }
+
+  return compileResponse;
+}
+
+export const getLatexSource = async (req, res) => {
+  const { threadId } = req.params;
+  const userId = req.user?.id || req.user?.userId || "anon";
+
+  try {
+    const thread = await getThreadForUser(threadId, userId);
+    const generatedLatex = await buildFinalLatex(thread);
+    const latex = thread.latexDraft || generatedLatex;
+    const title = (thread.title || "manuscript").replace(/\.[^.]+$/, "");
+
+    return res.status(200).json({
+      threadId,
+      title,
+      latex,
+      source: thread.latexDraft ? "draft" : "generated",
+      updatedAt: thread.latexDraftUpdatedAt || thread.updatedAt,
+    });
+  } catch (error) {
+    console.error("Get LaTeX Source Error:", error);
+    return res.status(error.status || 500).json({
+      error: error.message || "Failed to fetch LaTeX source",
+      details: error.details || null,
+    });
+  }
+};
+
+export const saveLatexSource = async (req, res) => {
+  const { threadId } = req.params;
+  const { latex } = req.body;
+  const userId = req.user?.id || req.user?.userId || "anon";
+
+  try {
+    if (typeof latex !== "string" || !latex.trim()) {
+      return res.status(400).json({ error: "A non-empty latex string is required." });
+    }
+
+    await getThreadForUser(threadId, userId);
+
+    await Thread.update(
+      {
+        latexDraft: latex,
+        latexDraftUpdatedAt: new Date(),
+      },
+      { where: { threadId, userId } }
+    );
+
+    return res.status(200).json({ success: true, updatedAt: new Date().toISOString() });
+  } catch (error) {
+    console.error("Save LaTeX Source Error:", error);
+    return res.status(error.status || 500).json({
+      error: error.message || "Failed to save LaTeX source",
+    });
+  }
+};
+
+export const compileLatexPreview = async (req, res) => {
+  const { threadId, latex } = req.body;
+  const userId = req.user?.id || req.user?.userId || "anon";
+
+  try {
+    if (!threadId || typeof latex !== "string" || !latex.trim()) {
+      return res.status(400).json({ error: "threadId and latex are required." });
+    }
+
+    await getThreadForUser(threadId, userId);
+
+    const compileResponse = await compileLatexToPdf(latex);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Cache-Control", "no-store");
+
+    const reader = compileResponse.body.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(value);
+    }
+
+    return res.end();
+  } catch (error) {
+    console.error("Compile LaTeX Preview Error:", error);
+    return res.status(error.status || 500).json({
+      error: error.message || "Failed to compile LaTeX preview",
+      details: error.details || null,
+    });
+  }
+};
+
 /**
  * @route   GET /api/document/finalize/:threadId?format=tex|pdf
  * @desc    Generate a downloadable LaTeX or compiled PDF for the thread.
@@ -205,12 +324,9 @@ export const finalizeDocument = async (req, res) => {
   const userId = req.user?.id || req.user?.userId || "anon";
 
   try {
-    const thread = await Thread.findOne({ where: { threadId, userId } });
-    if (!thread) {
-      return res.status(404).json({ error: "Thread not found" });
-    }
+    const thread = await getThreadForUser(threadId, userId);
 
-    const finalLatex = await buildFinalLatex(thread);
+    const finalLatex = thread.latexDraft || await buildFinalLatex(thread);
 
     // ── TEX download ──────────────────────────────────────────────────────
     if (format === "tex") {
@@ -223,23 +339,7 @@ export const finalizeDocument = async (req, res) => {
 
     // ── PDF download ──────────────────────────────────────────────────────
     if (format === "pdf") {
-      // Use latex.ytotech.com REST API — accepts JSON, returns compiled PDF
-      const compileResponse = await fetch("https://latex.ytotech.com/builds/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          compiler: "pdflatex",
-          resources: [
-            { main: true, content: finalLatex }
-          ]
-        }),
-      });
-
-      if (!compileResponse.ok) {
-        const errText = await compileResponse.text().catch(() => "Unknown compilation error");
-        console.error("[PDF Compile] ytotech error:", compileResponse.status, errText);
-        return res.status(502).json({ error: "PDF compilation failed. The LaTeX may contain errors." });
-      }
+      const compileResponse = await compileLatexToPdf(finalLatex);
 
       const fileName = (thread.title || "manuscript").replace(/\.[^.]+$/, "");
       res.setHeader("Content-Type", "application/pdf");

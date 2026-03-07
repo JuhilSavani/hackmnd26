@@ -3,6 +3,7 @@ import LandingPage from "@/pages/LandingPage"
 import LoginPage from "@/pages/LoginPage"
 import RegisterPage from "@/pages/RegisterPage"
 import Workspace from "@/pages/Workspace"
+import LatexEditorPage from "@/pages/LatexEditorPage"
 import NotFound from "@/utils/components/NotFound"
 import Loading from "@/utils/components/Loading"
 import { ThemeProvider } from "@/utils/contexts/ThemeProvider"
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
         {/* Protected routes — require authentication */}
         <Route path="workspace" element={<Protected><Workspace /></Protected>} />
         <Route path="workspace/:threadId" element={<Protected><Workspace /></Protected>} />
+        <Route path="workspace/:threadId/editor" element={<Protected><LatexEditorPage /></Protected>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />

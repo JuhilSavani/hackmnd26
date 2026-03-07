@@ -36,8 +36,8 @@ app.use(rateLimit({
   legacyHeaders: false,     // Disable legacy `X-RateLimit-*` headers
   message: 'Too many requests. Please try again after 15 minutes.',
 }));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use((req, res, next) => {

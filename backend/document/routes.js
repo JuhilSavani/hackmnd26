@@ -1,5 +1,11 @@
 import express from "express";
-import { processDocumentStream, finalizeDocument } from "./controllers.js";
+import {
+  processDocumentStream,
+  finalizeDocument,
+  getLatexSource,
+  saveLatexSource,
+  compileLatexPreview,
+} from "./controllers.js";
 
 const router = express.Router();
 
@@ -8,6 +14,9 @@ const router = express.Router();
  * @desc    Process document fetching and extraction via SSE
  */
 router.post("/process", processDocumentStream);
+router.get("/source/:threadId", getLatexSource);
+router.put("/source/:threadId", saveLatexSource);
+router.post("/preview", compileLatexPreview);
 
 /**
  * @route   GET /api/document/finalize/:threadId
