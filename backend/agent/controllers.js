@@ -17,6 +17,15 @@ export const detectIssues = async (req, res) => {
     return res.status(400).json({ error: "Missing threadId or latex" });
   }
 
+  // Setup disconnect handler to cancel LLM generation
+  const abortController = new AbortController();
+  req.on("close", () => {
+    if (!res.headersSent) {
+      console.log(`[Detect Issues] Client disconnected, aborting generation for ${threadId}`);
+      abortController.abort();
+    }
+  });
+
   try {
     const thread = await Thread.findOne({ where: { threadId, userId } });
     if (!thread) {
@@ -30,7 +39,7 @@ export const detectIssues = async (req, res) => {
       guidelines_text: thread.guidelinesContent || null,
     };
 
-    const result = await graph.invoke(initialState);
+    const result = await graph.invoke(initialState, { signal: abortController.signal });
 
     return res.status(200).json({
       target_journal: result.target_journal,
@@ -39,8 +48,15 @@ export const detectIssues = async (req, res) => {
     });
 
   } catch (err) {
+    if (err.name === "AbortError") {
+      console.log("[Detect Issues] Request aborted successfully.");
+      return; // Headers already closed, doing nothing.
+    }
+    
     console.error("Detect Issues Error:", err);
-    return res.status(500).json({ error: "Internal detection error" });
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Internal detection error" });
+    }
   }
 };
 
