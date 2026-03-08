@@ -51,8 +51,17 @@ The core intelligence is powered by a 3-node LangGraph cyclic workflow using Goo
    - **Validation:** Performs strict academic validation against the CSL rules and journal parameters (verifying `\cite` to `\bibitem` matches, heading hierarchies, figure conventions). Generates a per-rule compliance scorecard.
    - **Routing:** If unresolved issues remain and iteration limit is not reached, loops back to Node 2 for targeted refinements. If fully compliant, proceeds to file output phase.
 
+### Detect Issues Graph (`backend/agent/detectIssuesGraph.js`)
+
+A separate, lightweight **single-node, stateless** LangGraph used by the Live LaTeX Editor's **"Detect Issues"** button. It does not use a checkpointer and is not part of the main formatting pipeline.
+
+- **Node: `node_detect_issues.js`** — Takes the current LaTeX source and the thread's stored guidelines text, runs a single structured `gemini-2.5-flash` call, and returns a typed JSON payload of `{ target_journal, summary, detected_issues[] }`.
+- **Abort on Disconnect:** If the user navigates away mid-request, the Express controller ties an `AbortController` to `req.on('close')` and passes the signal into both `graph.invoke()` and the underlying Langchain `model.invoke()` call, propagating the cancellation all the way to the Gemini API's fetch socket.
+
 ### Output Generation
-The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to refise the output in real time with a side-by-side PDF preview.
+The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to revise the output in real time with:
+- A **resizable two-column layout**: left column (code editor top / detected issues panel bottom) and right column (live PDF preview). Both splits are independently adjustable by drag.
+- A **"Detect Issues"** button that runs the lightweight detection graph on demand and renders a per-rule issue list with expandable detail rows directly below the editor.
 
 ---
 
@@ -63,6 +72,7 @@ The final, validated LaTeX source is saved and compiled to generate a downloadab
 - **Styling:** TailwindCSS v4 + shadcn/ui
 - **Icons & Routing:** Lucide React, React Router DOM v7
 - **Forms:** React Hook Form, React Dropzone
+- **Layout:** `react-resizable-panels` (resizable editor/preview/issues panes)
 
 ### Backend & Orchestration
 - **API Server:** Node.js + Express 5
@@ -82,10 +92,19 @@ The final, validated LaTeX source is saved and compiled to generate a downloadab
 hackmnd26/
 ├── backend/                            # Express v5 API server
 │   ├── agent/                          # AI agent workflow (LangGraph)
-│   │   ├── nodes/                      # Graph nodes (detect, fix, critic)
-│   │   ├── prompts/                    # LLM prompts (detect, fix, critic)
-│   │   ├── controllers.js              # Agent endpoint logic
-│   │   ├── graph.js                    # LangGraph orchestration
+│   │   ├── nodes/                      # Graph nodes
+│   │   │   ├── node1_detect.js         # Detection & LaTeX conversion
+│   │   │   ├── node2_fix.js            # Fix generation
+│   │   │   ├── node3_critic.js         # Critic & validation
+│   │   │   └── node_detect_issues.js   # Lightweight live-editor detection node
+│   │   ├── prompts/                    # LLM prompts
+│   │   │   ├── detect.prompt.js        # Main pipeline detection prompt
+│   │   │   ├── fix.prompt.js           # Fix generation prompt
+│   │   │   ├── critic.prompt.js        # Critic prompt
+│   │   │   └── detect.prompt.live.js   # Live editor detection prompt (LaTeX-native)
+│   │   ├── controllers.js              # Agent + detect-issues endpoint logic
+│   │   ├── graph.js                    # Main LangGraph orchestration
+│   │   ├── detectIssuesGraph.js        # Stateless single-node detection graph
 │   │   ├── routes.js                   # Agent API routes
 │   │   └── state.js                    # LangGraph global state schemas (Zod)
 │   ├── auth/                           # Authentication service
@@ -100,11 +119,13 @@ hackmnd26/
 └── frontend/                           # React 19 + Vite SPA
     └── src/
         ├── components/ui/              # shadcn UI core components
+        │   ├── resizable.jsx           # Resizable panel primitives (react-resizable-panels)
+        │   └── ...                     # Other shadcn components
         ├── hooks/                      # React hooks (mobile detection)
         ├── lib/                        # Utility library (cn helper)
         ├── pages/                      # Feature pages
         │   ├── LandingPage.jsx         # Marketing / landing page
-        │   ├── LatexEditorPage.jsx     # Live LaTeX editor with PDF preview
+        │   ├── LatexEditorPage.jsx     # Live LaTeX editor — resizable layout + Detect Issues panel
         │   ├── LoginPage.jsx           # Login page
         │   ├── RegisterPage.jsx        # Registration page
         │   └── Workspace.jsx           # Main agent workspace
