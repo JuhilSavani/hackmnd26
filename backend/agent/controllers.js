@@ -1,7 +1,48 @@
 import { randomUUID } from "crypto";
 import { buildGraph } from "./graph.js";
+import { buildDetectIssuesGraph } from "./detectIssuesGraph.js";
 import { Thread } from "../models/thread.models.js";
 import { checkpointer } from "../configs/sequelize.configs.js";
+
+/**
+ * @route   POST /api/agent/detect-issues
+ * @desc    Run a lightweight detection-only agent on the editor's current LaTeX.
+ *          Returns structured issues list via JSON.
+ */
+export const detectIssues = async (req, res) => {
+  const { threadId, latex } = req.body;
+  const userId = req.user.id;
+
+  if (!threadId || !latex) {
+    return res.status(400).json({ error: "Missing threadId or latex" });
+  }
+
+  try {
+    const thread = await Thread.findOne({ where: { threadId, userId } });
+    if (!thread) {
+      return res.status(404).json({ error: "Thread not found" });
+    }
+
+    const graph = buildDetectIssuesGraph(); // No checkpointer passed
+
+    const initialState = {
+      latex_content: latex,
+      guidelines_text: thread.guidelinesContent || null,
+    };
+
+    const result = await graph.invoke(initialState);
+
+    return res.status(200).json({
+      target_journal: result.target_journal,
+      detected_issues: result.detected_issues,
+      summary: result.summary,
+    });
+
+  } catch (err) {
+    console.error("Detect Issues Error:", err);
+    return res.status(500).json({ error: "Internal detection error" });
+  }
+};
 
 export const streamAgent = async (req, res) => {
   const { threadId } = req.body;
