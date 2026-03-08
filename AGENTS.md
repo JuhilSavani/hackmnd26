@@ -9,7 +9,8 @@
 ## Project Overview
 
 ### What the Application Does
-<!-- TODO: complete this section -->
+
+An agentic manuscript formatting system that reformats research manuscripts to comply with a target journal's requirements. It accepts documents (DOCX, PDF, TXT), runs a multi-node LangGraph pipeline to detect and fix formatting violations, and returns a validated, submission-ready LaTeX file. Users can further edit the output in a **Live LaTeX Editor** with a real-time PDF preview and an on-demand **Detect Issues** panel that shows per-violation compliance analysis.
 
 ### Tech Stack
 
@@ -37,13 +38,22 @@ hackmnd26/
 │   ├── package.json
 │   ├── index.js                        # API entry point — Express setup & middleware
 │   ├── agent/                          # AI agent workflow (LangGraph)
-│   │   ├── controllers.js              # Agent execution logic
-│   │   ├── graph.js                    # LangGraph workflow definition
-│   │   ├── nodes/                      # Graph nodes (detect, fix, critic)
-│   │   ├── prompts/                    # LLM prompts for the agent
-│   │   ├── routes.js                   # API route for agent triggering
-│   │   └── state.js                    # Agent state definition
-│   ├── clients/                        # Third-party SDK client initializations (google oauth, supabase)
+│   │   ├── controllers.js              # Agent execution logic + detect-issues HTTP handler
+│   │   ├── graph.js                    # Main LangGraph workflow (detect → fix → critic)
+│   │   ├── detectIssuesGraph.js        # Lightweight single-node detection graph (live editor)
+│   │   ├── state.js                    # Agent state definition (Zod schemas)
+│   │   ├── routes.js                   # API routes for agent triggering + detect-issues endpoint
+│   │   ├── nodes/                      # Graph nodes
+│   │   │   ├── node1_detect.js         # Detection & LaTeX conversion node
+│   │   │   ├── node2_fix.js            # Fix generation node
+│   │   │   ├── node3_critic.js         # Critic & validation node
+│   │   │   └── node_detect_issues.js   # Stateless live-editor detection node
+│   │   └── prompts/                    # LLM prompts
+│   │       ├── detect.prompt.js        # Detection prompt (main pipeline)
+│   │       ├── fix.prompt.js           # Fix generation prompt
+│   │       ├── critic.prompt.js        # Critic prompt
+│   │       └── detect.prompt.live.js   # Detection prompt for live editor (LaTeX-native)
+│   ├── clients/                        # Third-party SDK client initializations
 │   ├── configs/                        # Configuration modules (passport, cloudinary, sequelize)
 │   ├── models/                         # Sequelize database models (user.models.js, thread.models.js)
 │   ├── auth/                           # Authentication service
@@ -72,11 +82,13 @@ hackmnd26/
         ├── main.jsx                    # React DOM root mount
         ├── App.jsx                     # Root component with router configuration
         ├── index.css                   # Global tailwind styles, shadcn theme vars
-        ├── components/ui/              # shadcn/ui primitives (button, input, etc.)
+        ├── components/ui/              # shadcn/ui primitives
+        │   ├── resizable.jsx           # Resizable panel components (react-resizable-panels)
+        │   └── ...                     # Other shadcn components (button, input, etc.)
         ├── lib/                        # Utility functions by shadcn (utils.js with cn())
         ├── pages/                      # Route-level page components
         └── utils/
-            ├── actions/                # API action/call functions (auth, stream, thread, upload)
+            ├── actions/                # API action/call functions (auth, stream, thread, upload, document)
             ├── components/             # Custom components
             ├── contexts/               # React context providers (ThemeProvider, AuthProvider)
             ├── hooks/                  # Custom react hooks (useAuth, useLogout, useTheme)
