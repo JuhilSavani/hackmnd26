@@ -85,7 +85,13 @@ export function streamAgentExecution({ threadId }) {
         signal: controller.signal,
       });
 
-      if (!response.ok) throw new Error(`Agent execution request failed: ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 429) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Monthly free limit reached. 0 uses remaining.");
+        }
+        throw new Error(`Agent execution request failed: ${response.status}`);
+      }
       if (!response.body) throw new Error("No response body received for agent stream.");
 
       // Custom SSE Parser Transformer

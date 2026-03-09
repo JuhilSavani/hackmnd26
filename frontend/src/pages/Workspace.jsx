@@ -10,6 +10,7 @@ import { loadThreadDetailsAction } from '@/utils/actions/thread.actions';
 import { generateSecureUrlAction } from '@/utils/actions/thread.actions';
 import { uploadDocumentToCloudinary } from '@/utils/actions/upload.actions';
 import { streamDocumentExtraction, streamAgentExecution } from '@/utils/actions/stream.actions';
+import { getUsage, saveUsage } from '@/utils/indexedDB.js';
 
 const SidebarInactiveIcon = ({ className = "w-5 h-5" }) => (
   <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -52,13 +53,14 @@ function MainContent({ setThreads }) {
   const [downloadFormat, setDownloadFormat] = useState('pdf');
   const [isGenerating, setIsGenerating] = useState({ pdf: false, tex: false });
   const [complianceScore, setComplianceScore] = useState(null);
+  const [usage, setUsage] = useState(null);
   const abortStreamRef = useRef(null);
   const currentThreadIdRef = useRef(null);
   const bottomRef = useRef(null);
 
   // LOAD THREAD EFFECT — mirrors the ChatWindow pattern
   useEffect(() => {
-    // Case A: New workspace (no threadId) → reset state
+    // Case A: New workspace (no threadId) → reset state but keep usage from IndexedDB
     if (!threadId) {
       setSubmission(null);
       setExtractionLogs([]);
@@ -71,6 +73,10 @@ function MainContent({ setThreads }) {
       setIsGenerating({ pdf: false, tex: false });
       setComplianceScore(null);
       setIsUploading(false);
+      // Load persisted usage from IndexedDB so the pill always shows
+      getUsage().then(stored => {
+        if (stored) setUsage(stored);
+      });
       return;
     }
 
@@ -93,6 +99,11 @@ function MainContent({ setThreads }) {
     setComplianceScore(null);
     setIsUploading(false);
     setError(null);
+
+    // Eagerly load the persisted rate limit usage from IndexedDB
+    getUsage().then(stored => {
+      if (stored) setUsage(stored);
+    });
 
     // Case C: Navigating to an existing thread → Fetch from DB
     let isMounted = true;
@@ -151,6 +162,12 @@ function MainContent({ setThreads }) {
 
   // SUBMIT HANDLER — receives { file, guidelinesUrl } from DocumentUpload
   const handleSubmit = async ({ file, guidelinesUrl }) => {
+    // Hard block if they have absolutely no usages remaining
+    if (usage && usage.remaining <= 0) {
+      setError("Monthly free limit reached. Please wait for your limit to reset.");
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
     setExtractionLogs([]);
@@ -256,6 +273,9 @@ function MainContent({ setThreads }) {
             }
           } else if (event.type === 'compliance_score') {
             setComplianceScore(event.val);
+          } else if (event.type === 'usage') {
+            setUsage(event.val);
+            saveUsage(event.val);
           } else if (event.type === 'node_end') {
             setExtractionLogs(prev => [...prev, { type: 'success', text: `Agent finished: ${friendlyName}`, id: Date.now() + Math.random() }]);
           }
@@ -306,18 +326,42 @@ function MainContent({ setThreads }) {
 
   return (
     <SidebarInset className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col overflow-hidden border ${contentStateClasses} ${open ? 'h-[calc(100vh-1rem)]' : 'h-screen'}`}>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b border-white/5 px-6 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-10 w-full">
-        <div className={`transition-all duration-300 ${open ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100'}`}>
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="-ml-2 h-8 w-8 text-[#a1a1aa] hover:text-[#fafafa] hover:bg-white/5">
-            <SidebarInactiveIcon />
-          </Button>
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/5 px-6 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-10 w-full">
+        <div className="flex items-center gap-2">
+          <div className={`transition-all duration-300 ${open ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100'}`}>
+            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="-ml-2 h-8 w-8 text-[#a1a1aa] hover:text-[#fafafa] hover:bg-white/5">
+              <SidebarInactiveIcon />
+            </Button>
+          </div>
+          <div className="flex items-center gap-4">
+            {!open && <span className="h-4 w-px bg-white/10 mr-2" />}
+            <span className="text-sm font-medium text-[#fafafa]">
+              {isNewSession ? "New Format Request" : "PaperPilot Workspace"}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          {!open && <span className="h-4 w-px bg-white/10 mr-2" />}
-          <span className="text-sm font-medium text-[#fafafa]">
-            {isNewSession ? "New Format Request" : "PaperPilot Workspace"}
-          </span>
-        </div>
+
+        {/* Usage pill — always visible. Shows persisted value from IndexedDB, defaults to 1/1 before load. */}
+        {(() => {
+          const remaining = usage ? usage.remaining : 2;
+          const reset = usage?.reset;
+          const isLoaded = usage !== null;
+          return (
+            <div className="flex flex-col items-end">
+              <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#18181b]/80 border border-white/10 rounded-full shadow-sm transition-all duration-300 ${!isLoaded ? 'opacity-50' : ''}`}>
+                <div className={`w-2 h-2 rounded-full shadow-[0_0_8px] ${remaining > 0 ? "bg-green-500 shadow-green-500/50" : "bg-red-500 shadow-red-500/50"}`}></div>
+                <span className={`text-[12px] font-medium tracking-wide ${remaining > 0 ? 'text-[#fafafa]' : 'text-red-400'}`}>
+                  {remaining} / 2 usages left
+                </span>
+              </div>
+              {isLoaded && remaining === 0 && reset && (
+                <div className="text-[10px] text-[#71717a] mt-1 px-2">
+                  Resets: {new Date(reset).toLocaleDateString()}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </header>
 
       {/* Loading bar */}
@@ -329,9 +373,31 @@ function MainContent({ setThreads }) {
 
       <div className="flex-1 overflow-y-auto w-full scroll-smooth pt-10">
 
-        {/* STATE 1: New session — show upload form */}
+        {/* STATE 1: New session */}
         {isNewSession && !isUploading && (
-          <DocumentUpload onSubmit={handleSubmit} isUploading={isUploading} />
+          usage && usage.remaining <= 0 ? (
+            // Full replacement when limit is reached
+            <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 p-4">
+              <div className="bg-[#09090b] border border-red-500/20 rounded-2xl p-10 shadow-xl flex flex-col items-center text-center gap-5 animate-in fade-in duration-300">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-[#fafafa] mb-2">Monthly Limit Reached</h2>
+                  <p className="text-[#a1a1aa] text-sm max-w-sm">
+                    You&apos;ve used your free formatting request for this month. Your limit will reset on{' '}
+                    <span className="text-[#fafafa] font-medium">{new Date(usage.reset).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+                  <span className="text-[13px] text-red-400 font-medium">0 / 2 usages remaining</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <DocumentUpload onSubmit={handleSubmit} isUploading={isUploading} />
+          )
         )}
 
         {/* STATE 2: Submission exists (upload in progress or existing thread loaded) — show blue card + logs */}

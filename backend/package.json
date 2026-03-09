@@ -24,6 +24,8 @@
     "@langchain/tavily": "^1.2.0",
     "@mendable/firecrawl-js": "^4.15.2",
     "@supabase/supabase-js": "^2.98.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.4",
     "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

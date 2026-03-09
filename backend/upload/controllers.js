@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Thread } from "../models/thread.models.js";
 import { extractDocument } from "../utils/extract.js";
+import { monthlyLimiter } from "../utils/ratelimit.js";
 
 const APP_NAME = "hackmnd26";
 
@@ -8,10 +9,16 @@ const APP_NAME = "hackmnd26";
  * @route   POST /api/upload/sign
  * @desc    Generate a Cloudinary upload signature for authenticated client-side uploads
  */
-export const generateUploadSignature = (req, res) => {
+export const generateUploadSignature = async (req, res) => {
   try {
     // Determine user ID from auth middleware (e.g., Passport/JWT)
     const userId = req.user.id || req.user.userId || "anon";
+    // Prevent generating the signature if the user has exhausted their limits
+    const usage = await monthlyLimiter.getRemaining(userId);
+    if (usage && usage.remaining <= 0) {
+      return res.status(429).json({ message: "Monthly free limit reached.", remaining: 0 });
+    }
+
     // Customize folder path
     const folder = `${APP_NAME}/${userId}/docs`;
     const timestamp = Math.round(Date.now() / 1000);

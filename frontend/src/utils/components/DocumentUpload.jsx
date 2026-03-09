@@ -21,7 +21,8 @@ export default function DocumentUpload({ onSubmit, isUploading = false }) {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
       'text/plain': ['.txt']
     },
-    maxFiles: 1
+    maxFiles: 1,
+    disabled: isUploading
   });
 
   const handleSubmit = (e) => {

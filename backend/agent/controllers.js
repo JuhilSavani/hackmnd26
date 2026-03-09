@@ -3,6 +3,7 @@ import { buildGraph } from "./graph.js";
 import { buildDetectIssuesGraph } from "./detectIssuesGraph.js";
 import { Thread } from "../models/thread.models.js";
 import { checkpointer } from "../configs/sequelize.configs.js";
+import { monthlyLimiter } from "../utils/ratelimit.js";
 
 /**
  * @route   POST /api/agent/detect-issues
@@ -80,11 +81,24 @@ export const streamAgent = async (req, res) => {
       return res.status(400).json({ error: "No document text extracted yet" });
     }
 
+    // --- Rate Limit Check ---
+    const monthly = await monthlyLimiter.limit(userId);
+    if (!monthly.success) {
+      return res.status(429).json({
+        error: "Monthly free limit reached.",
+        remaining: 0,
+        reset: monthly.reset,
+      });
+    }
+
     // Set SSE Required Headers
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
+
+    // Send rate limit usage info immediately
+    res.write(`data: ${JSON.stringify({ type: "usage", val: { remaining: monthly.remaining, reset: monthly.reset } })}\n\n`);
 
     // Setup disconnect handler
     const controller = new AbortController();
