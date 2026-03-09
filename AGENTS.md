@@ -160,6 +160,7 @@ npx shadcn@latest add <component-name>   # e.g. npx shadcn@latest add dialog
 PORT=4000
 NODE_ENV=development
 APP_ORIGIN_URL=http://localhost:3000
+JWT_SECRET=
 
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -168,6 +169,12 @@ GOOGLE_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
 SUPABASE_PROJECT_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_PG_POOLER=
+
+FIRECRAWL_API_KEY=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 ### `frontend/.env`
@@ -176,6 +183,7 @@ SUPABASE_PG_POOLER=
 VITE_BASE_API_ENDPOINT=http://localhost:4000/api
 VITE_GOOGLE_CLIENT_ID=
 VITE_GOOGLE_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
+VITE_CLOUDINARY_CLOUD_NAME=
 ```
 
 > **Rule**: Frontend env vars MUST start with `VITE_` to be exposed to client
