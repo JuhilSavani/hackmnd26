@@ -25,64 +25,68 @@ Academic publishing requires strict adherence to journal-specific formatting sty
 
 ---
 
-## System Architecture
+## Setup & Local Development
 
-Our application uses a LangGraph-orchestrated AI agent pipeline.
+### Prerequisites
+- Node.js (v18+)
+- Supabase project and DB credentials
+- Cloudinary Storage
+- Google OAuth Application Credentials
+- Gemini API Key
 
-### Input Paths
-1. **PDF/TXT Path:** Uploaded file is parsed directly to plain text using `unpdf`.
-2. **DOCX Path:** File is extracted using rule-based parsing (`jszip`, `fast-xml-parser`) to recover lossy fields like fonts, spacing, and table structures, followed by text extraction via `mammoth.js`.
+### 1. Environment Setup
 
-### LangGraph Pipeline (`backend/agent/`)
+Create `.env` files in both the frontend and backend directories.
 
-The core intelligence is powered by a 3-node LangGraph cyclic workflow using Google Gemini (`gemini-2.5-flash` for structured reasoning, `gemini-2.5-flash-lite` for streaming summaries) via `@langchain/google-genai`.
+**`backend/.env`**
+```env
+PORT=4000
+NODE_ENV=development
+APP_ORIGIN_URL=http://localhost:3000
+JWT_SECRET="..."
 
-1. **Node 1: Detection & LaTeX Conversion (`node1_detect.js`)**
-   - **Inputs:** `document_content`, `document_metadata` (DOCX only), `parsed_guidelines_content`
-   - **Operations:** Identifies the target journal and citation style from provided guidelines. Detects all formatting violations (e.g., missing DOIs, duplicate references, heading hierarchy issues, figure label inconsistencies). Converts the complete document into a LaTeX (`.tex`) representation for precise patching.
-   - **Output:** Structured JSON of detected issues, full LaTeX source, and a streamed natural-language summary for the user.
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
+GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
 
-2. **Node 2: Fix Generation (`node2_fix.js`)**
-   - **Operations:** Generates precise `target` (find) and `replacement` (replace) LaTeX patches for every detected issue.
-   - **Looping Logic:** Driven by `state.is_loop` — on the first run, it addresses all found issues. In loop mode (when issues persist), it strictly targets remaining unresolved problems.
+SUPABASE_PROJECT_URL="..."
+SUPABASE_SERVICE_ROLE_KEY="..."
+SUPABASE_PG_POOLER="..."
 
-3. **Node 3: Critic & Validation (`node3_critic.js`)**
-   - **Operations:** Applies the generated exact-match text string patches to the LaTeX document.
-   - **Validation:** Performs strict academic validation against the CSL rules and journal parameters (verifying `\cite` to `\bibitem` matches, heading hierarchies, figure conventions). Generates a per-rule compliance scorecard.
-   - **Routing:** If unresolved issues remain and iteration limit is not reached, loops back to Node 2 for targeted refinements. If fully compliant, proceeds to file output phase.
+FIRECRAWL_API_KEY="..."
 
-### Detect Issues Graph (`backend/agent/detectIssuesGraph.js`)
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
 
-A separate, lightweight **single-node, stateless** LangGraph used by the Live LaTeX Editor's **"Detect Issues"** button. It does not use a checkpointer and is not part of the main formatting pipeline.
+GEMINI_API_KEY="..."
+```
 
-- **Node: `node_detect_issues.js`** — Takes the current LaTeX source and the thread's stored guidelines text, runs a single structured `gemini-2.5-flash` call, and returns a typed JSON payload of `{ target_journal, summary, detected_issues[] }`.
-- **Abort on Disconnect:** If the user navigates away mid-request, the Express controller ties an `AbortController` to `req.on('close')` and passes the signal into both `graph.invoke()` and the underlying Langchain `model.invoke()` call, propagating the cancellation all the way to the Gemini API's fetch socket.
+**`frontend/.env`**
+```env
+VITE_BASE_API_ENDPOINT=http://localhost:4000/api
+VITE_GOOGLE_CLIENT_ID="..."
+VITE_GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
+VITE_CLOUDINARY_CLOUD_NAME="..."
+```
 
-### Output Generation
-The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to revise the output in real time with:
-- A **resizable two-column layout**: left column (code editor top / detected issues panel bottom) and right column (live PDF preview). Both splits are independently adjustable by drag.
-- A **"Detect Issues"** button that runs the lightweight detection graph on demand and renders a per-rule issue list with expandable detail rows directly below the editor.
+### 2. Run the Full Application
 
----
+**Start the Backend:**
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-## Tech Stack
+**Start the Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### Frontend
-- **Framework:** React 19 + Vite 7
-- **Styling:** TailwindCSS v4 + shadcn/ui
-- **Icons & Routing:** Lucide React, React Router DOM v7
-- **Forms:** React Hook Form, React Dropzone
-- **Layout:** `react-resizable-panels` (resizable editor/preview/issues panes)
-
-### Backend & Orchestration
-- **API Server:** Node.js + Express 5
-- **Agent Framework:** LangGraph (`@langchain/langgraph`), `@langchain/core`, `zod`
-- **LLM:** Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-lite`) via `@langchain/google-genai`
-- **Auth:** Supabase Auth + Google OAuth 2.0 + Passport.js (JWT)
-- **Database:** PostgreSQL + Sequelize ORM (Supabase connection pooling)
-- **Storage:** Cloudinary (Document/PDF uploads and generated outputs)
-- **Extraction Tools:** `unpdf`, `jszip`, `mammoth.js`, `fast-xml-parser`
-- **Web Scraping:** Firecrawl (journal guideline extraction)
+> **Client:** `http://localhost:3000` | **API Base:** `http://localhost:4000/api`
 
 ---
 
@@ -138,58 +142,61 @@ hackmnd26/
 
 ---
 
-## Setup & Local Development
+## Tech Stack
 
-### Prerequisites
-- Node.js (v18+)
-- Supabase project and DB credentials
-- Cloudinary Storage
-- Google OAuth Application Credentials
-- Gemini API Key
+### Frontend
+- **Framework:** React 19 + Vite 7
+- **Styling:** TailwindCSS v4 + shadcn/ui
+- **Icons & Routing:** Lucide React, React Router DOM v7
+- **Forms:** React Hook Form, React Dropzone
+- **Layout:** `react-resizable-panels` (resizable editor/preview/issues panes)
 
-### 1. Environment Setup
+### Backend & Orchestration
+- **API Server:** Node.js + Express 5
+- **Agent Framework:** LangGraph (`@langchain/langgraph`), `@langchain/core`, `zod`
+- **LLM:** Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-lite`) via `@langchain/google-genai`
+- **Auth:** Supabase Auth + Google OAuth 2.0 + Passport.js (JWT)
+- **Database:** PostgreSQL + Sequelize ORM (Supabase connection pooling)
+- **Storage:** Cloudinary (Document/PDF uploads and generated outputs)
+- **Extraction Tools:** `unpdf`, `jszip`, `mammoth.js`, `fast-xml-parser`
+- **Web Scraping:** Firecrawl (journal guideline extraction)
 
-Create `.env` files in both the frontend and backend directories.
+---
 
-**`backend/.env`**
-```env
-PORT=4000
-NODE_ENV=development
-APP_ORIGIN_URL=http://localhost:3000
+## System Architecture
 
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
-GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
+Our application uses a LangGraph-orchestrated AI agent pipeline.
 
-SUPABASE_PROJECT_URL="..."
-SUPABASE_SERVICE_ROLE_KEY="..."
-SUPABASE_PG_POOLER="..."
+### Input Paths
+1. **PDF/TXT Path:** Uploaded file is parsed directly to plain text using `unpdf`.
+2. **DOCX Path:** File is extracted using rule-based parsing (`jszip`, `fast-xml-parser`) to recover lossy fields like fonts, spacing, and table structures, followed by text extraction via `mammoth.js`.
 
-# Gemini LLM (used by all pipeline nodes)
-GEMINI_API_KEY="..."
-```
+### LangGraph Pipeline (`backend/agent/`)
 
-**`frontend/.env`**
-```env
-VITE_BASE_API_ENDPOINT=http://localhost:4000/api
-VITE_GOOGLE_CLIENT_ID="..."
-VITE_GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
-```
+The core intelligence is powered by a 3-node LangGraph cyclic workflow using Google Gemini (`gemini-2.5-flash` for structured reasoning, `gemini-2.5-flash-lite` for streaming summaries) via `@langchain/google-genai`.
 
-### 2. Run the Full Application
+1. **Node 1: Detection & LaTeX Conversion (`node1_detect.js`)**
+   - **Inputs:** `document_content`, `document_metadata` (DOCX only), `parsed_guidelines_content`
+   - **Operations:** Identifies the target journal and citation style from provided guidelines. Detects all formatting violations (e.g., missing DOIs, duplicate references, heading hierarchy issues, figure label inconsistencies). Converts the complete document into a LaTeX (`.tex`) representation for precise patching.
+   - **Output:** Structured JSON of detected issues, full LaTeX source, and a streamed natural-language summary for the user.
 
-**Start the Backend:**
-```bash
-cd backend
-npm install
-npm run dev
-```
+2. **Node 2: Fix Generation (`node2_fix.js`)**
+   - **Operations:** Generates precise `target` (find) and `replacement` (replace) LaTeX patches for every detected issue.
+   - **Looping Logic:** Driven by `state.is_loop` — on the first run, it addresses all found issues. In loop mode (when issues persist), it strictly targets remaining unresolved problems.
 
-**Start the Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+3. **Node 3: Critic & Validation (`node3_critic.js`)**
+   - **Operations:** Applies the generated exact-match text string patches to the LaTeX document.
+   - **Validation:** Performs strict academic validation against the CSL rules and journal parameters (verifying `\cite` to `\bibitem` matches, heading hierarchies, figure conventions). Generates a per-rule compliance scorecard.
+   - **Routing:** If unresolved issues remain and iteration limit is not reached, loops back to Node 2 for targeted refinements. If fully compliant, proceeds to file output phase.
 
-> **Client:** `http://localhost:3000` | **API Base:** `http://localhost:4000/api`
+### Detect Issues Graph (`backend/agent/detectIssuesGraph.js`)
+
+A separate, lightweight **single-node, stateless** LangGraph used by the Live LaTeX Editor's **"Detect Issues"** button. It does not use a checkpointer and is not part of the main formatting pipeline.
+
+- **Node: `node_detect_issues.js`** — Takes the current LaTeX source and the thread's stored guidelines text, runs a single structured `gemini-2.5-flash` call, and returns a typed JSON payload of `{ target_journal, summary, detected_issues[] }`.
+- **Abort on Disconnect:** If the user navigates away mid-request, the Express controller ties an `AbortController` to `req.on('close')` and passes the signal into both `graph.invoke()` and the underlying Langchain `model.invoke()` call, propagating the cancellation all the way to the Gemini API's fetch socket.
+
+### Output Generation
+The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to revise the output in real time with:
+- A **resizable two-column layout**: left column (code editor top / detected issues panel bottom) and right column (live PDF preview). Both splits are independently adjustable by drag.
+- A **"Detect Issues"** button that runs the lightweight detection graph on demand and renders a per-rule issue list with expandable detail rows directly below the editor.
