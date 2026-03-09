@@ -68,7 +68,7 @@ hackmnd26/
 │   ├── upload/                         # Upload handling service area
 │   │   ├── controllers.js              # Cloudinary API interaction logic
 │   │   └── routes.js                   # Endpoint routing for signatures & logs
-│   └── utils/                          # Shared utility functions (extractors, etc.)
+│   └── utils/                          # Shared utility functions (extractors, ratelimit.js)
 │
 └── frontend/                           # React 19 + Vite SPA
     ├── .env                            # Environment variables (ignored)
@@ -175,6 +175,9 @@ FIRECRAWL_API_KEY=
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
+
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 ### `frontend/.env`
