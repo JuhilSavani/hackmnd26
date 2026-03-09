@@ -52,7 +52,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#a1a1aa]">
             <a href="#stack" className="hover:text-[#fafafa] transition-colors">Tech Stack</a>
             <a href="#system-design" className="hover:text-[#fafafa] transition-colors">Architecture</a>
-            <a href="#developer-notes" className="hover:text-[#fafafa] transition-colors">Developer Notes</a>
+            <a href="#faqs" className="hover:text-[#fafafa] transition-colors">FAQs</a>
             <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-[#fafafa] transition-colors">GitHub</a>
           </div>
           <div className="flex items-center gap-4">
@@ -222,8 +222,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Developer Notes (FAQ) */}
-      <section id="developer-notes" className="py-24 px-6 border-t border-white/5 bg-[#09090b]">
+      {/* Frequently Asked Questions (FAQs) */}
+      <section id="faqs" className="py-24 px-6 border-t border-white/5 bg-[#09090b]">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
 
