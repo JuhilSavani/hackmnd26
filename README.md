@@ -60,6 +60,9 @@ CLOUDINARY_API_KEY="..."
 CLOUDINARY_API_SECRET="..."
 
 GEMINI_API_KEY="..."
+
+UPSTASH_REDIS_REST_URL="..."
+UPSTASH_REDIS_REST_TOKEN="..."
 ```
 
 **`frontend/.env`**
@@ -118,7 +121,7 @@ hackmnd26/
 │   ├── models/                         # Sequelize models (User, Thread)
 │   ├── threads/                        # Thread/history management
 │   ├── upload/                         # Upload handling / Cloudinary actions
-│   ├── utils/                          # Document extractors (DOCX, PDF)
+│   ├── utils/                          # Document extractors (DOCX, PDF) + ratelimit utility
 │   └── index.js                        # Express server entry point
 └── frontend/                           # React 19 + Vite SPA
     └── src/
@@ -160,6 +163,7 @@ hackmnd26/
 - **Storage:** Cloudinary (Document/PDF uploads and generated outputs)
 - **Extraction Tools:** `unpdf`, `jszip`, `mammoth.js`, `fast-xml-parser`
 - **Web Scraping:** Firecrawl (journal guideline extraction)
+- **Rate Limiting:** Upstash Redis (`@upstash/redis`, `@upstash/ratelimit`) — 2 free requests per user per 30 days
 
 ---
 
@@ -200,3 +204,12 @@ A separate, lightweight **single-node, stateless** LangGraph used by the Live La
 The final, validated LaTeX source is saved and compiled to generate a downloadable PDF alongside a detailed changelog of applied fixes. Users can also use the **Live LaTeX Editor** to revise the output in real time with:
 - A **resizable two-column layout**: left column (code editor top / detected issues panel bottom) and right column (live PDF preview). Both splits are independently adjustable by drag.
 - A **"Detect Issues"** button that runs the lightweight detection graph on demand and renders a per-rule issue list with expandable detail rows directly below the editor.
+
+---
+
+## Rate Limiting
+
+To protect free-tier infrastructure costs, the agent pipeline is rate-limited to **2 requests per user per 30 days** using [Upstash Redis](https://upstash.com).
+
+- **Backend:** `backend/utils/ratelimit.js` initializes an Upstash `fixedWindow(2, "30 d")` limiter. The `/api/upload/sign` (Cloudinary signature) endpoint is checked first using `getRemaining` — blocking the entire upload before it starts. The `/api/agent/stream` endpoint performs a full `limit()` check that also decrements the counter.
+- **Frontend:** The remaining usage count is persisted in **IndexedDB** (`PaperPilotDB`) so the pill persists across page reloads. When `remaining === 0`, the `DocumentUpload` form is replaced entirely by a **"Monthly Limit Reached"** screen showing the reset date. A usage pill in the header always shows the current count.
