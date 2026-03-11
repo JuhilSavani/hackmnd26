@@ -63,11 +63,11 @@ export default function LoginPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] hero-glow pointer-events-none -z-10"></div>
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
 
-      <div className="w-full max-w-lg p-6 relative z-10">
+      <div className="w-full max-w-lg px-4 sm:px-6 relative z-10">
 
 
           {/* Login Card */}
-          <div className="glass-card rounded-xl p-8 shadow-2xl">
+          <div className="glass-card rounded-xl p-5 sm:p-8 shadow-2xl">
               <div className="text-center mb-6">
                   <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
                   <p className="text-sm text-[#a1a1aa] mt-2">Enter your username to sign in</p>

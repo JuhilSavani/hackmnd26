@@ -285,7 +285,7 @@ export default function LatexEditorPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
-            <h1 className="truncate text-2xl font-semibold tracking-tight">{title}.tex</h1>
+            <h1 className="truncate text-base sm:text-xl md:text-2xl font-semibold tracking-tight">{title}.tex</h1>
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -321,6 +321,7 @@ export default function LatexEditorPage() {
         </div>
 
         <div className="mx-auto flex max-w-[1500px] gap-2 px-4 pb-4 md:hidden">
+          {/* Pane toggles */}
           <Button
             variant={activeMobilePane === "code" ? "default" : "ghost"}
             onClick={() => setActiveMobilePane("code")}
@@ -335,24 +336,26 @@ export default function LatexEditorPage() {
           >
             Preview
           </Button>
+
+          {/* Action buttons */}
           <Button
             variant="ghost"
             onClick={handleDetectIssues}
-            className="cursor-pointer border border-amber-500/20 bg-amber-500/5 text-amber-300 hover:bg-amber-500/15"
+            className="flex-1 cursor-pointer border border-amber-500/20 bg-amber-500/5 text-amber-300 hover:bg-amber-500/15"
             disabled={isDetecting}
           >
-            {isDetecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            {isDetecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <span className="font-medium">Issues</span>}
           </Button>
           <Button
             onClick={() => downloadLatexFile({ latex, title })}
-            className="cursor-pointer bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7]"
+            className="cursor-pointer bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7] px-3"
           >
             <Download className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      <main className="mx-auto h-[calc(100vh-117px)] max-w-[1500px] gap-4 px-4 py-4 md:px-6">
+      <main className="mx-auto h-[calc(100vh-161px)] md:h-[calc(100vh-117px)] max-w-[1500px] gap-4 px-4 py-4 md:px-6">
         
         {/* === MOBILE LAYOUT (CSS Flex) === */}
         <div className="flex h-full lg:hidden flex-col gap-4">

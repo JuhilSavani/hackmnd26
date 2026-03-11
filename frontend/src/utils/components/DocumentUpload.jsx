@@ -53,8 +53,8 @@ export default function DocumentUpload({ onSubmit, isUploading = false }) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 p-4">
-      <div className="bg-[#09090b] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden animate-in fade-in duration-300">
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 p-3 sm:p-4">
+      <div className="bg-[#09090b] border border-white/10 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden animate-in fade-in duration-300">
         
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold text-[#fafafa] mb-2 tracking-tight">Format Your Manuscript</h2>

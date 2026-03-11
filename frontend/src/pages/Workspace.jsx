@@ -319,23 +319,24 @@ function MainContent({ setThreads }) {
   };
 
   const contentStateClasses = open 
-    ? "bg-[#09090b] my-2 mr-2 rounded-md border-white/5 shadow-2xl" 
+    ? "bg-[#09090b] sm:my-2 sm:mr-2 rounded-md border-white/5 shadow-2xl" 
     : "bg-[#09090b] m-0 rounded-none border-transparent";
 
   const isNewSession = !submission && !threadId;
 
   return (
-    <SidebarInset className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col overflow-hidden border ${contentStateClasses} ${open ? 'h-[calc(100vh-1rem)]' : 'h-screen'}`}>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/5 px-6 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-10 w-full">
-        <div className="flex items-center gap-2">
-          <div className={`transition-all duration-300 ${open ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100'}`}>
+    <SidebarInset className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col overflow-hidden border ${contentStateClasses} ${open ? 'h-screen sm:h-[calc(100vh-1rem)]' : 'h-screen'}`}>
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/5 px-3 sm:px-6 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-10 w-full gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {/* On mobile: always visible. On md+: hidden when sidebar is open */}
+          <div className={`transition-all duration-300 shrink-0 ${open ? 'md:w-0 md:overflow-hidden md:opacity-0' : 'w-auto opacity-100'}`}>
             <Button variant="ghost" size="icon" onClick={toggleSidebar} className="-ml-2 h-8 w-8 text-[#a1a1aa] hover:text-[#fafafa] hover:bg-white/5">
               <SidebarInactiveIcon />
             </Button>
           </div>
-          <div className="flex items-center gap-4">
-            {!open && <span className="h-4 w-px bg-white/10 mr-2" />}
-            <span className="text-sm font-medium text-[#fafafa]">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            {(!open || window.innerWidth < 768) && <span className="h-4 w-px bg-white/10 mr-1 sm:mr-2 shrink-0" />}
+            <span className="text-xs sm:text-sm font-medium text-[#fafafa] truncate">
               {isNewSession ? "New Format Request" : "PaperPilot Workspace"}
             </span>
           </div>
@@ -347,11 +348,11 @@ function MainContent({ setThreads }) {
           const reset = usage?.reset;
           const isLoaded = usage !== null;
           return (
-            <div className="flex flex-col items-end">
-              <div className={`flex items-center gap-2 px-3 py-1.5 bg-[#18181b]/80 border border-white/10 rounded-full shadow-sm transition-all duration-300 ${!isLoaded ? 'opacity-50' : ''}`}>
-                <div className={`w-2 h-2 rounded-full shadow-[0_0_8px] ${remaining > 0 ? "bg-green-500 shadow-green-500/50" : "bg-red-500 shadow-red-500/50"}`}></div>
-                <span className={`text-[12px] font-medium tracking-wide ${remaining > 0 ? 'text-[#fafafa]' : 'text-red-400'}`}>
-                  {remaining} / 2 usages left
+            <div className="flex flex-col items-end shrink-0">
+              <div className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 bg-[#18181b]/80 border border-white/10 rounded-full shadow-sm transition-all duration-300 ${!isLoaded ? 'opacity-50' : ''}`}>
+                <div className={`w-2 h-2 rounded-full shadow-[0_0_8px] shrink-0 ${remaining > 0 ? "bg-green-500 shadow-green-500/50" : "bg-red-500 shadow-red-500/50"}`}></div>
+                <span className={`text-[11px] sm:text-[12px] font-medium tracking-wide whitespace-nowrap ${remaining > 0 ? 'text-[#fafafa]' : 'text-red-400'}`}>
+                  {remaining} / 2 left
                 </span>
               </div>
               {isLoaded && remaining === 0 && reset && (
@@ -413,7 +414,7 @@ function MainContent({ setThreads }) {
                       <FileText className="w-6 h-6 text-blue-400" />
                     </div>
                     <div className="flex flex-col justify-center min-w-0 flex-1">
-                      <h3 className="text-[15px] font-semibold text-[#fafafa] leading-snug mb-1 truncate max-w-[250px] sm:max-w-sm md:max-w-md" title={submission.fileName}>
+                      <h3 className="text-[15px] font-semibold text-[#fafafa] leading-snug mb-1 truncate max-w-[160px] xs:max-w-[200px] sm:max-w-sm md:max-w-md" title={submission.fileName}>
                         {submission.fileName}
                       </h3>
                       <div className="flex items-center gap-2 text-[13px] min-w-0">

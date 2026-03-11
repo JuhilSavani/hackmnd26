@@ -44,10 +44,10 @@ export default function LandingPage() {
 
       {/* Navigation */}
       <nav className="glass-nav fixed w-full z-50 top-0">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-linear-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
-            <span className="font-semibold text-2xl tracking-tight">PaperPilot</span>
+            <span className="font-semibold text-xl sm:text-2xl tracking-tight">PaperPilot</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#a1a1aa]">
             <a href="#stack" className="hover:text-[#fafafa] transition-colors">Tech Stack</a>
@@ -55,9 +55,9 @@ export default function LandingPage() {
             <a href="#faqs" className="hover:text-[#fafafa] transition-colors">FAQs</a>
             <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-[#fafafa] transition-colors">GitHub</a>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/login" className="text-sm font-medium hover:text-white/80 transition-colors hidden sm:block">Log in</Link>
-            <Link to="/register" className="bg-[#fafafa] text-[#18181b] hover:bg-[#fafafa]/90 px-4 py-2 rounded-md text-sm font-medium transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <Link to="/register" className="bg-[#fafafa] text-[#18181b] hover:bg-[#fafafa]/90 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
               Get Started
             </Link>
           </div>
@@ -65,23 +65,23 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <main className="flex-grow pt-32 pb-16 px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] hero-glow pointer-events-none -z-10"></div>
+      <main className="flex-grow pt-28 sm:pt-32 pb-16 px-4 sm:px-6 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[1000px] h-[400px] sm:h-[600px] hero-glow pointer-events-none -z-10"></div>
 
-        <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-[#a1a1aa] mb-4 hover:border-white/20 transition-colors cursor-default">
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-            <span>HackaMined 2026 // Cactus Communications</span>
-            <span className="w-px h-3 bg-white/10 mx-1"></span>
-            <span className="text-white/60">Fix My Format</span>
+        <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-[#a1a1aa] mb-2 sm:mb-4 hover:border-white/20 transition-colors cursor-default">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+            <span className="whitespace-nowrap">HackaMined 2026 // Cactus Communications</span>
+            <span className="w-px h-3 bg-white/10 mx-1 hidden sm:block"></span>
+            <span className="text-white/60 hidden sm:inline">Fix My Format, Agent Paperpal</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/60 pb-2">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-b from-white to-white/60 pb-2">
             Autonomous Manuscript <br />
             <span className="text-white">Formatting Agent</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-[#a1a1aa] max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-[#a1a1aa] max-w-3xl mx-auto leading-relaxed px-2">
             An agentic workflow that autonomously reformats research manuscripts to comply with journal-specific guidelines. Say goodbye to desk rejections.
           </p>
 
@@ -136,26 +136,26 @@ export default function LandingPage() {
       </main>
 
       {/* Tech Strip */}
-      <section id="stack" className="py-12 border-y border-white/5 bg-transparent overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-xs font-medium text-[#52525b] uppercase tracking-widest mb-8">Powering the Architecture</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">React 19</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tailwind v4</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">LangGraph</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Firecrawl</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Cloudinary</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">PostgreSQL</div>
-            <div className="text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Supabase Auth</div>
+      <section id="stack" className="py-10 sm:py-12 border-y border-white/5 bg-transparent overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <p className="text-center text-xs font-medium text-[#52525b] uppercase tracking-widest mb-6 sm:mb-8">Powering the Architecture</p>
+          <div className="flex flex-wrap justify-center items-center gap-5 sm:gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">React 19</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Tailwind v4</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">LangGraph</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Firecrawl</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Cloudinary</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">PostgreSQL</div>
+            <div className="text-base sm:text-xl font-bold text-white hover:text-white transition-opacity font-display tracking-tight">Supabase Auth</div>
           </div>
         </div>
       </section>
 
       {/* Project Status API-style block */}
-      <section id="status" className="py-24 px-6 bg-[#09090b] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <section id="status" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#09090b] relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] bg-white/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
         <div className="max-w-6xl mx-auto flex justify-center">
-          <div className="relative w-full md:w-1/2">
+          <div className="relative w-full sm:w-4/5 md:w-1/2">
             <div className="rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm p-2 shadow-2xl relative">
               <div className="absolute inset-0 bg-linear-to-t from-[#09090b]/98 via-transparent to-transparent z-10 pointer-events-none"></div>
 
@@ -171,8 +171,8 @@ export default function LandingPage() {
 
               {/* Terminal Body */}
               <div className="bg-[#09090b] rounded-b-lg p-6 font-mono text-sm text-[#d4d4d4] overflow-hidden">
-                <span className="text-[#ce9178]">{'{'}</span><br/>
-                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"track"</span>: <span className="text-[#ce9178]">"Fix My Format, Cactus Communications"</span>,<br/>
+                <span>{'{'}</span><br/>
+                {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"track"</span>: <span className="text-[#ce9178]">"Fix My Format, Agent Paperpal"</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"event"</span>: <span className="text-[#ce9178]">"HackaMined 2026"</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"open_source"</span>: <span className="text-[#569cd6]">true</span>,<br/>
                 {'\u00A0\u00A0'}<span className="text-[#9cdcfe]">"maintained_by"</span>: <span className="text-[#ce9178]">"Juhil Savani"</span>,<br/>
@@ -183,7 +183,7 @@ export default function LandingPage() {
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Instant update using server sent events"</span><br/>
                 {'\u00A0\u00A0\u00A0\u00A0'}<span className="text-[#ce9178]">"Cloudinary secure delivery"</span><br/>
                 {'\u00A0\u00A0'}]<br/>
-                {'}'}
+                <span>{'}'}</span>
               </div>
             </div>
           </div>
@@ -191,17 +191,17 @@ export default function LandingPage() {
       </section>
 
       {/* Architecture Section */}
-      <section id="system-design" className="pt-6 pb-24 px-6 bg-[#09090b] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <section id="system-design" className="pt-6 pb-16 sm:pb-24 px-4 sm:px-6 bg-[#09090b] relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">System Architecture</h2>
-            <p className="text-[#a1a1aa] max-w-2xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">System Architecture</h2>
+            <p className="text-[#a1a1aa] max-w-2xl mx-auto text-sm sm:text-base">
               The data flow from user interaction to AI response.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 relative">
             <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-linear-to-r from-transparent via-white/20 to-transparent -z-10"></div>
 
             {[
@@ -223,9 +223,9 @@ export default function LandingPage() {
       </section>
 
       {/* Frequently Asked Questions (FAQs) */}
-      <section id="faqs" className="py-24 px-6 border-t border-white/5 bg-[#09090b]">
+      <section id="faqs" className="py-16 sm:py-24 px-4 sm:px-6 border-t border-white/5 bg-[#09090b]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">Frequently Asked Questions</h2>
 
           <div className="space-y-4">
             {[
@@ -244,9 +244,9 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => toggleNote(index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none cursor-pointer"
+                  className="w-full flex items-center justify-between p-4 sm:p-6 text-left focus:outline-none cursor-pointer gap-3"
                 >
-                  <span className="font-medium text-lg">{item.question}</span>
+                  <span className="font-medium text-sm sm:text-lg">{item.question}</span>
                   <svg
                     className={`w-5 h-5 transition-transform duration-300 text-[#a1a1aa] ${activeNote === index ? 'rotate-180' : ''}`}
                     viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -276,13 +276,13 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-32 px-6 relative overflow-hidden bg-[#09090b] border-t border-white/5">
+      <section className="py-20 sm:py-32 px-4 sm:px-6 relative overflow-hidden bg-[#09090b] border-t border-white/5">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-[#09090b] to-[#09090b] opacity-50"></div>
         </div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Want to explore the code?</h2>
-          <p className="text-xl text-[#a1a1aa] mb-10 max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">Want to explore the code?</h2>
+          <p className="text-base sm:text-xl text-[#a1a1aa] mb-8 sm:mb-10 max-w-2xl mx-auto">
             Experience the future of academic publishing formatting with PaperPilot.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -297,24 +297,51 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-white/5 bg-[#09090b] text-sm text-[#a1a1aa]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-linear-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
-              <span className="font-bold text-white text-xl">PaperPilot</span>
+      <footer className="py-8 sm:py-12 px-4 sm:px-6 border-t border-white/5 bg-[#09090b] text-sm text-[#a1a1aa]">
+        <div className="max-w-7xl mx-auto">
+
+          {/* Mobile layout */}
+          <div className="flex flex-col items-center gap-5 md:hidden">
+            {/* Brand */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded bg-linear-to-br from-white to-zinc-400 shadow-[0_0_12px_rgba(255,255,255,0.5)]"></div>
+                <span className="font-bold text-white text-lg">PaperPilot</span>
+              </div>
+              <p className="text-xs text-[#52525b]">Agentic Manuscript Formatter.</p>
             </div>
-            <p>Agentic Manuscript Formatter.</p>
+
+            {/* Divider */}
+            <div className="w-full h-px bg-white/5" />
+
+            {/* Links + Copyright on same row */}
+            <div className="flex w-full items-center justify-between">
+              <div className="flex gap-5 font-medium text-xs">
+                <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Github</a>
+                <a href="mailto:savanijuhil@gmail.com" className="hover:text-white transition-colors">Contact</a>
+              </div>
+              <p className="text-xs text-[#52525b]">© 2026 PaperPilot</p>
+            </div>
           </div>
 
-          <div className="flex gap-8 font-medium">
-            <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Github</a>
-            <a href="mailto:savanijuhil@gmail.com" className="hover:text-white transition-colors">Contact Developer</a>
+          {/* Desktop layout */}
+          <div className="hidden md:flex flex-row justify-between items-center gap-8">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-md bg-linear-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
+                <span className="font-bold text-white text-xl">PaperPilot</span>
+              </div>
+              <p>Agentic Manuscript Formatter.</p>
+            </div>
+            <div className="flex gap-8 font-medium">
+              <a href="https://github.com/JuhilSavani/hackmnd26" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Github</a>
+              <a href="mailto:savanijuhil@gmail.com" className="hover:text-white transition-colors">Contact Developer</a>
+            </div>
+            <div className="text-right">
+              <p>© 2026 PaperPilot. HackaMined 2026.</p>
+            </div>
           </div>
 
-          <div className="text-center md:text-right">
-            <p>© 2026 PaperPilot. HackaMined 2026.</p>
-          </div>
         </div>
       </footer>
     </div>
