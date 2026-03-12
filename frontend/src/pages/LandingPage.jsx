@@ -98,39 +98,210 @@ export default function LandingPage() {
         </div>
 
         {/* Preview Image / Abstract Visual */}
-        <div className="mt-20 max-w-5xl mx-auto rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm p-2 shadow-2xl relative">
-          <div className="absolute inset-0 bg-linear-to-t from-[#09090b] via-transparent to-transparent z-10"></div>
-          <div className="bg-[#18181b] rounded-lg aspect-[16/9] w-full flex overflow-hidden border border-white/5">
+        <div className="mt-20 max-w-5xl mx-auto rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm p-1 sm:p-2 shadow-2xl relative">
+          <div className="absolute inset-0 bg-linear-to-t from-[#09090b] via-transparent to-transparent z-10 pointer-events-none"></div>
+          
+          <div className="bg-[#09090b] rounded-lg h-[450px] sm:h-[600px] w-full flex overflow-hidden border border-white/5 relative">
+            
             {/* Sidebar Mock */}
-            <div className="w-64 border-r border-white/5 bg-[#09090b] hidden md:flex flex-col p-4 gap-4">
-              <div className="h-8 w-3/4 bg-white/5 rounded"></div>
-              <div className="space-y-2 mt-4">
-                <div className="h-4 w-full bg-white/5 rounded opacity-60"></div>
-                <div className="h-4 w-5/6 bg-white/5 rounded opacity-40"></div>
-                <div className="h-4 w-4/6 bg-white/5 rounded opacity-30"></div>
-              </div>
-            </div>
-            {/* Chat Area Mock */}
-            <div className="flex-1 flex flex-col">
-              <div className="flex-1 p-8 space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-8 h-8 rounded bg-white/10 flex-shrink-0"></div>
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 w-1/3 bg-white/10 rounded"></div>
-                    <div className="h-16 w-3/4 bg-white/5 rounded"></div>
+            <aside className="w-[16rem] lg:w-[17rem] shrink-0 bg-[#09090b] hidden md:flex flex-col h-full z-0 border-r border-white/5">
+              <div className="pt-4 pb-0 flex flex-col gap-3">
+                <div className="px-4 flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-3 font-bold tracking-tight text-[#fafafa]">
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-white to-zinc-400 shadow-[0_0_15px_rgba(255,255,255,0.6)]"></div>
+                    <span className="font-semibold text-lg tracking-tight">PaperPilot</span>
+                  </div>
+                  <div className="h-6 w-6 flex items-center justify-center text-[#a1a1aa] rounded-md">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
+                      <path d="m6,4h2v12h-2c-1.656,0-3-1.344-3-3v-6c0-1.656,1.344-3,3-3Z" fill="currentColor"></path>
+                      <rect height="12" width="14" x="3" y="4" rx="3" ry="3" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></rect>
+                    </svg>
                   </div>
                 </div>
-                <div className="flex gap-4 flex-row-reverse">
-                  <div className="w-8 h-8 rounded bg-[#fafafa]/20 flex-shrink-0"></div>
-                  <div className="space-y-2 flex-1">
-                    <div className="h-12 w-1/2 bg-[#fafafa]/10 rounded ml-auto"></div>
+                
+                <div className="px-3">
+                  <div className="w-full flex items-center gap-2 bg-[#18181b]/50 text-[#fafafa] border border-white/5 rounded-md h-8 px-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#a1a1aa]"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span className="font-medium text-[13px]">New Chat</span>
+                  </div>
+                </div>
+
+                <div className="px-3 mt-1 relative">
+                  <input type="text" placeholder="Search chats..." className="w-full bg-transparent text-[#fafafa] pl-7 py-1 text-[13px] border-b border-white/5 placeholder:text-[#52525b]" disabled />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-[#52525b]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-hidden px-2 py-3 flex flex-col gap-1">
+                <div className="px-3 py-1 text-[10px] font-semibold text-[#52525b] uppercase tracking-wider">Pinned</div>
+                
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full bg-zinc-800 text-white relative">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <div className="flex flex-col items-start min-w-0 flex-1">
+                    <span className="truncate font-medium text-[13px] text-white">Nature Med Format...</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full text-zinc-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <div className="flex flex-col items-start min-w-0 flex-1">
+                    <span className="truncate font-medium text-[13px] text-zinc-300">IEEE Guidelines</span>
+                  </div>
+                </div>
+
+                <div className="mx-3 my-1 h-px bg-white/5"></div>
+
+                <div className="px-3 py-1 text-[10px] font-semibold text-[#52525b] uppercase tracking-wider">Recent</div>
+                
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full text-zinc-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <div className="flex flex-col items-start min-w-0 flex-1">
+                    <span className="truncate font-medium text-[13px] text-zinc-300">ACL Full Review 23</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-md w-full text-zinc-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <div className="flex flex-col items-start min-w-0 flex-1">
+                    <span className="truncate font-medium text-[13px] text-zinc-300">PLOS ONE Alignment</span>
                   </div>
                 </div>
               </div>
-              <div className="p-4 border-t border-white/5">
-                <div className="h-12 w-full bg-white/5 rounded-lg border border-white/10 mx-auto max-w-2xl"></div>
+
+              <div className="p-2 border-t border-white/5 mt-auto">
+                <div className="flex items-center gap-2 px-2">
+                  <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center border border-white/5 text-[#fafafa] font-medium text-[9px] shrink-0">
+                    J
+                  </div>
+                  <span className="text-[12px] font-medium text-[#fafafa] truncate">Juhil Savani</span>
+                </div>
               </div>
-            </div>
+            </aside>
+
+            {/* Main Content Mock */}
+            <main className="flex-1 flex flex-col md:my-1.5 md:mr-1.5 rounded-lg border-none md:border md:border-white/5 bg-[#09090b] relative overflow-hidden h-full shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+              
+              <header className="flex h-10 shrink-0 items-center justify-between border-b border-white/5 px-4 sm:px-5 bg-[#09090b]/80 backdrop-blur-md w-full gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <span className="text-[12px] sm:text-[13px] font-medium text-[#fafafa] truncate">Nature Med Formatting...</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-[#18181b]/80 border border-white/10 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                  <span className="text-[10px] sm:text-[11px] font-medium text-[#fafafa] whitespace-nowrap">2 / 2 left</span>
+                </div>
+              </header>
+
+              <div className="flex-1 overflow-hidden p-3 sm:p-5 w-full relative">
+                {/* Scroll overlay shadow */}
+                <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-b from-transparent to-[#09090b] pointer-events-none z-10"></div>
+                
+                <div className="w-full max-w-2xl mx-auto flex flex-col gap-3 h-full overflow-y-auto no-scrollbar pb-[100px] pointer-events-none select-none">
+                  
+                  {/* Blue Document Card */}
+                  <div className="bg-blue-600/10 border border-blue-500/20 rounded-md p-3 w-full shrink-0 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#18181b] rounded flex items-center justify-center shrink-0 border border-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400">
+                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <h3 className="text-[12px] sm:text-[13px] font-medium text-[#fafafa] truncate">
+                          brain_cancer_research_draft.docx
+                        </h3>
+                        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] min-w-0">
+                          <span className="text-[#a1a1aa] shrink-0">Guidelines:</span> 
+                          <span className="text-blue-400 truncate">nature.com/nature-medicine/...</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pipeline Status */}
+                  <div className="border border-white/10 rounded-md bg-[#18181b]/50 p-3 shadow-sm shrink-0">
+                    <div className="flex items-center justify-between w-full px-3 py-2 bg-black/40 border border-white/5 rounded-md">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <span className="text-[11px] sm:text-[12px] font-medium text-[#fafafa]">Pipeline Complete</span>
+                      </div>
+                      <span className="text-[9px] sm:text-[10px] text-[#a1a1aa] px-2 py-0.5 rounded-full bg-white/5 border border-white/10">12 steps</span>
+                    </div>
+
+                    <div className="space-y-2 mt-3 pt-3 border-t border-white/5">
+                      <div className="text-[10px] sm:text-[11px] text-[#e4e4e7] bg-black/40 border border-white/5 p-2.5 rounded-md">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="w-1 h-1 rounded-full bg-blue-500"></div>
+                          <span className="text-blue-400 font-medium uppercase tracking-wider text-[8px] sm:text-[9px]">Detection Summary</span>
+                        </div>
+                        <div className="pl-2 border-l-2 border-white/5 text-[#a1a1aa] leading-relaxed">
+                          Detected 18 formatting violations. Major issues include incorrect margin sizing, unnumbered sections, improperly formatted section headers.
+                        </div>
+                      </div>
+                      <div className="text-[10px] sm:text-[11px] text-[#e4e4e7] bg-black/40 border border-white/5 p-2.5 rounded-md">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="w-1 h-1 rounded-full bg-blue-500"></div>
+                          <span className="text-blue-400 font-medium uppercase tracking-wider text-[8px] sm:text-[9px]">Fix Summary</span>
+                        </div>
+                        <div className="pl-2 border-l-2 border-white/5 text-[#a1a1aa] leading-relaxed">
+                          Applied 18 precise formatting fixes. Converted all citations to the numbered style [1], adjusted margins, and validated caption placement.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Compliance Dashboard */}
+                  <div className="border border-white/10 rounded-md bg-[#18181b]/50 overflow-hidden shrink-0">
+                    <div className="w-full flex items-center justify-between p-3 border-b border-white/5">
+                      <div>
+                        <h3 className="text-[12px] sm:text-[13px] font-medium text-[#fafafa] mb-0.5">Compliance Score</h3>
+                        <p className="text-[10px] sm:text-[11px] text-[#a1a1aa]">18 fixes applied</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-8 h-8 sm:w-10 sm:h-10">
+                          <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#27272a" strokeWidth="3" />
+                            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeDasharray="95.43 97.38" />
+                          </svg>
+                          <span className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[11px] font-bold text-green-400">98</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="px-3 py-3 text-[10px] sm:text-[11px] space-y-1.5 bg-[#09090b]/20">
+                      <div className="flex items-center gap-2 py-1.5 px-2 rounded bg-black/20 border border-white/5">
+                        <span className="w-4 text-center">✅</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[#e4e4e7] font-medium truncate">Line Spacing & Margins</div>
+                        </div>
+                        <span className="font-mono text-green-400 text-[9px] sm:text-[10px]">10/10</span>
+                      </div>
+                      <div className="flex items-center gap-2 py-1.5 px-2 rounded bg-black/20 border border-white/5">
+                        <span className="w-4 text-center">✅</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[#e4e4e7] font-medium truncate">Citations System</div>
+                        </div>
+                        <span className="font-mono text-green-400 text-[9px] sm:text-[10px]">10/10</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Download Action */}
+                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <div className="flex-1 bg-[#fafafa] text-[#09090b] text-[11px] sm:text-[12px] font-semibold h-8 rounded flex items-center justify-center gap-1.5 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                      Download PDF
+                    </div>
+                    <div className="flex-1 bg-[#18181b] border border-white/10 text-white text-[11px] sm:text-[12px] font-medium h-8 rounded flex items-center justify-center gap-1.5 shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                      Edit LaTeX
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </main>
           </div>
         </div>
       </main>
@@ -301,9 +472,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
 
           {/* Mobile layout */}
-          <div className="flex flex-col items-center gap-5 md:hidden">
+          <div className="flex flex-col items-start gap-5 md:hidden">
             {/* Brand */}
-            <div className="flex flex-col items-center gap-1.5">
+            <div className="flex flex-col items-start gap-1.5">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded bg-linear-to-br from-white to-zinc-400 shadow-[0_0_12px_rgba(255,255,255,0.5)]"></div>
                 <span className="font-bold text-white text-lg">PaperPilot</span>
